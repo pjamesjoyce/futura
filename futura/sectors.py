@@ -1,5 +1,6 @@
 import brightway2 as bw
-import wurst as w
+#import wurst as w
+from . import w
 
 electricity_markets = [w.contains('unit', 'kilowatt hour')]
 electricity_markets += [w.contains('name', 'electricity')]

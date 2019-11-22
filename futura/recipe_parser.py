@@ -6,7 +6,8 @@ from futura.utils import create_filter_from_description
 from .wrappers import FuturaDatabase
 from . import technology
 from .constants import ASSET_PATH
-import wurst as w
+#import wurst as w
+from . import w
 
 import os.path
 

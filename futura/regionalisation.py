@@ -1,4 +1,5 @@
-import wurst as w
+#import wurst as w
+from . import w
 
 from futura.wrappers import FuturaDatabase
 

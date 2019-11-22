@@ -1,4 +1,5 @@
-import wurst as w
+#import wurst as w
+from . import w
 import brightway2 as bw2
 from .utils import *
 from .storage import storage

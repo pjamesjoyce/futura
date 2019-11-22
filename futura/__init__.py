@@ -1,4 +1,16 @@
 import logging
+# import wurst
+import wurst
+import futura.wurst_monkeypatch as wmp
+#do monkeypatching here
+
+wurst.relink_technosphere_exchanges = wmp.relink_technosphere_exchanges
+wurst.transformations.relink_technosphere_exchanges = wmp.relink_technosphere_exchanges
+wurst.transformations.geo.relink_technosphere_exchanges = wmp.relink_technosphere_exchanges
+wurst.transformations.geo.allocate_inputs = wmp.allocate_inputs
+
+#create w alias for wurst
+w = wurst
 
 # set up logging to file - see previous section for more details
 logging.basicConfig(level=logging.DEBUG,
@@ -26,3 +38,4 @@ def log(MESSAGE, *args, **kwargs):
 def warn(MESSAGE, *args, **kwargs):
     logger1.warning(MESSAGE, *args, **kwargs)
 
+warn('Futura is using a monkeypatched version of Wurst')

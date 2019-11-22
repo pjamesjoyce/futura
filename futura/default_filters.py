@@ -1,4 +1,5 @@
-import wurst as w
+#import wurst as w
+from . import w
 
 coal_location_filter = []
 coal_location_filter += [w.equals('database', 'ecoinvent')]

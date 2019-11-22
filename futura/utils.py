@@ -1,4 +1,6 @@
-import wurst as w
+#import wurst as w
+from . import w
+
 import pprint
 from wurst.searching import exclude
 
