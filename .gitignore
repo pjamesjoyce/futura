@@ -120,3 +120,8 @@ futura_ui/icons/metaprocess
 # Notebooks - for now
 
 *.ipynb
+
+# allow .ipynb and .yml for the examples folder
+!examples/*.ipynb
+!examples/*.yml
+
