@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QAbstractItemModel, QFile, QIODevice, QModelIndex, Qt
-from PyQt5.QtWidgets import QApplication, QTreeView
-from PyQt5.QtGui import QImage, QIcon
+from PySide2.QtCore import QAbstractItemModel, QFile, QIODevice, QModelIndex, Qt
+from PySide2.QtWidgets import QApplication, QTreeView
+from PySide2.QtGui import QImage, QIcon
 from pathlib import Path
 import os
 

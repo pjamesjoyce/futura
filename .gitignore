@@ -106,3 +106,17 @@ venv.bak/
 
 # Pycharm
 .idea
+
+# Project specific
+
+futura_ui/icons/ab_main/
+futura_ui/icons/context
+futura_ui/icons/metaprocess
+
+*.xlsx
+*.yml
+*.fdb
+
+# Notebooks - for now
+
+*.ipynb
