@@ -5,6 +5,9 @@ To create the wheel run - python setup.py bdist_wheel
 from setuptools import setup
 import os, sys
 
+PACKAGE_NAME = 'futura'
+VERSION = '0.0.2'
+
 packages = []
 root_dir = os.path.dirname(__file__)
 if root_dir:
@@ -39,12 +42,12 @@ my_package_files = []
 my_package_files.extend(package_files(os.path.join('futura', 'assets')))
 
 setup(
-    name='futura',
-    version="0.0.1",
+    name=PACKAGE_NAME,
+    version=VERSION,
     packages=packages,
     author="P. James Joyce",
     author_email="pjamesjoyce@gmail.com",
-    license=open('LICENSE').read(),
+    license="BSD 3-Clause License",
     package_data={'futura': my_package_files},
     entry_points={
         'console_scripts': [
@@ -54,7 +57,7 @@ setup(
     # ],
     include_package_data=True,
     url="https://github.com/pjamesjoyce/futura/",
-    # download_url="https://github.com/pjamesjoyce/lcopt/archive/0.4.2.tar.gz",
+    download_url="https://github.com/pjamesjoyce/futura/archive/0.0.1.tar.gz",
     long_description=open('README.md').read(),
     description='A tool for LCA',
     keywords=['LCA', 'Life Cycle Assessment', 'Foreground system', 'Background system', 'Foreground model',
