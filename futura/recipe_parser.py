@@ -6,8 +6,9 @@ from futura.utils import create_filter_from_description
 from .wrappers import FuturaDatabase
 from . import technology
 from .constants import ASSET_PATH
-#import wurst as w
+# import wurst as w
 from . import w
+from .regionalisation import create_regional_activities
 
 import os.path
 
@@ -71,9 +72,27 @@ class FuturaLoader:
                 assert k in possible_functions, "{} is not a valid technology function".format(k)
 
                 if k == 'add_technology_to_database':
+
+                    possible_subfunctions = [
+                        'create_regional_activities'
+                    ]
                     actual_functions = []
-                    for func in v['funcs']:
-                        actual_functions.append(getattr(technology, func))
+                    for func in v['tasks']:
+                        if func['function'] in possible_subfunctions:
+                            if func['function'] == 'create_regional_activities':
+                                this_item = {'function': create_regional_activities,
+                                             'args': func.get('args', []),
+                                             'kwargs': func.get('kwargs', {})}
+
+                                actual_functions.append(this_item)
+
+                        elif func['function'] in dir(technology):
+                            args = [self.database]
+                            args.extend(func.get('args', []))
+                            this_item = {'function': getattr(technology, func['function']),
+                                         'args': args,
+                                         'kwargs': func.get('kwargs', {})}
+                            actual_functions.append(this_item)
 
                     if "__ASSET_PATH__/" in v['technology_file']:
                         technology_file = v['technology_file'].replace("__ASSET_PATH__/", "")
@@ -81,7 +100,11 @@ class FuturaLoader:
                     else:
                         technology_path = v['technology_file']
 
-                    technology.add_technology_to_database(self.database, technology_path, actual_functions)
+                    self.database.extract_excel_data(technology_path)
+
+                    for item in actual_functions:
+                        _ = item['function'](*item['args'], **item['kwargs'])
+                    # technology.add_technology_to_database(self.database, technology_path, actual_functions)
 
                 elif k == 'add_default_CCS_processes':
                     technology.add_default_CCS_processes(self.database)

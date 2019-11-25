@@ -4,6 +4,7 @@ from . import log, warn
 from .default_filters import *
 from tqdm import tqdm
 from .constants import FULL_CCS_FILE
+from.utils import create_filter_from_description
 
 
 def add_technology_to_database(database, technology_file, funcs):
@@ -46,13 +47,11 @@ def fix_ch_only_processes(database):
     return database
 
 
-def regionalise_based_on_filters(database, location_filter, base_activity_filter, progress_message=None):
+def regionalise_multiple_processes(database, locations, base_activity_filter, progress_message=None):
 
-    location_list = list(w.get_many(database.db, *location_filter))
-    if len(set([x['name'] for x in location_list])) != 1:
-        warn("The location filter returns more than one process")
-
-    locations = list(set([x['location'] for x in location_list]))
+    if not callable(base_activity_filter[0]):
+        print('Creating base_activity_filter from description')
+        base_activity_filter = create_filter_from_description(base_activity_filter)
 
     base_activities = list(w.get_many(database.db, *base_activity_filter))
 
@@ -84,6 +83,17 @@ def regionalise_based_on_filters(database, location_filter, base_activity_filter
                                         contained=False,
                                         exclude=['UCTE'])
     return database
+
+
+def regionalise_based_on_filters(database, location_filter, base_activity_filter, progress_message=None):
+
+    location_list = list(w.get_many(database.db, *location_filter))
+    if len(set([x['name'] for x in location_list])) != 1:
+        warn("The location filter returns more than one process")
+
+    locations = list(set([x['location'] for x in location_list]))
+
+    return regionalise_multiple_processes(database, locations, base_activity_filter, progress_message)
 
 
 add_hard_coal_ccs = partial(regionalise_based_on_filters,
