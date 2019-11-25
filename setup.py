@@ -6,7 +6,7 @@ from setuptools import setup
 import os, sys
 
 PACKAGE_NAME = 'futura'
-VERSION = '0.0.2'
+VERSION = '0.0.3'
 
 packages = []
 root_dir = os.path.dirname(__file__)
@@ -56,8 +56,8 @@ setup(
     # install_requires=[
     # ],
     include_package_data=True,
-    url="https://github.com/pjamesjoyce/futura/",
-    download_url="https://github.com/pjamesjoyce/futura/archive/0.0.1.tar.gz",
+    url="https://github.com/pjamesjoyce/{}/".format(PACKAGE_NAME),
+    download_url="https://github.com/pjamesjoyce/{}/archive/{}.tar.gz".format(PACKAGE_NAME, VERSION),
     long_description=open('README.md').read(),
     description='A tool for LCA',
     keywords=['LCA', 'Life Cycle Assessment', 'Foreground system', 'Background system', 'Foreground model',
