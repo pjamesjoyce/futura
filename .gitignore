@@ -125,3 +125,6 @@ futura_ui/icons/metaprocess
 !examples/*.ipynb
 !examples/*.yml
 
+# allow travis related yaml files
+!travis.yml
+!meta.yaml

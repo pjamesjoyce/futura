@@ -1,0 +1,59 @@
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install:
+  - sudo apt-get update
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda install conda-build
+    # Useful for debugging any issues with conda
+  - conda info -a
+
+  # conda channels
+  - conda config --append channels conda-forge
+  - conda config --append channels konstantinstadler
+  - conda config --append channels cmutel
+  - conda config --append channels haasad
+  - conda config --append channels pjamesjoyce
+
+  # conda build
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      echo $(date '+%Y%m%d%H%M');
+      sed "s/  number:\ 0/  number:\ $(date '+%Y%m%d%H%M')/g" ./ci/travis/recipe/meta.yaml > /tmp/meta.yaml;
+      mv /tmp/meta.yaml ./ci/travis/recipe/meta.yaml;
+    fi
+  - conda build ./ci/travis/recipe
+
+  # Create environment
+  - conda create -q -n test python=$TRAVIS_PYTHON_VERSION
+  - source activate test
+  - conda install -q --use-local futura
+  - pip install -r travis-requirements.txt
+
+# command to run tests
+script: cd tests; pytest --cov=futura
+
+after_success:
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      coveralls;
+      echo "$TRAVIS_BRANCH"
+      echo "$TRAVIS_PULL_REQUEST"
+      echo $TRAVIS_BRANCH
+      echo $TRAVIS_PULL_REQUEST
+
+      if [ "$TRAVIS_BRANCH" = "development" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+        conda install anaconda-client;
+        cp /home/travis/miniconda/conda-bld/noarch/*.tar.bz2 .;
+        anaconda -t $CONDA_TOKEN upload --force *.tar.bz2;
+        echo "uploaded to conda channel";
+      else
+        echo "no upload because not development branch";
+     fi
+   else
+    echo "no upload from osx";
+   fi

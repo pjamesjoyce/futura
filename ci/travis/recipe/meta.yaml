@@ -1,0 +1,47 @@
+{% set name = "futura" %}
+{% set version = "0.0.3" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  path: ../../..
+
+build:
+  noarch: python
+  number: 0
+  script: python setup.py install  --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - python
+    - brightway2 >=2.1.2
+    - pandas
+    - pyyaml
+    - pywin32 # [win]
+    - bw2io >=0.7.1
+    - wurst
+
+  run:
+    - python
+    - brightway2 >=2.1.2
+    - pandas
+    - pyyaml
+    - pywin32 # [win]
+    - wurst
+
+about:
+  home: https://github.com/pjamesjoyce/futura/
+  license: BSD 3-Clause
+  license_family: BSD
+  license_file: LICENSE.txt
+  summary: 'A tool for LCA'
+  description: '# Futura. A tool for LCA'
+  dev_url: 'https://github.com/pjamesjoyce/futura'
+
+extra:
+  recipe-maintainers:
+    - pjamesjoyce
