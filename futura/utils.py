@@ -1,6 +1,6 @@
 #import wurst as w
 from . import w
-
+from .proxy import WurstFilter, WurstFilterSet
 import pprint
 from wurst.searching import exclude
 
@@ -120,7 +120,11 @@ def fix_products_and_locations_external(external_data, existing_data):
     print("Default (zero) production volume data added to {} production exchanges".format(production_volume_count))
 
 
-def create_filter_from_description(description):
+def create_filter_from_description(description, database_filter=None):
+
+    if database_filter:
+        add_filter = [{'filter': 'equals', 'args': ['database', database_filter]}]
+        description = add_filter + description
 
     wurst_functions = {
         'equals': w.equals,
@@ -134,16 +138,25 @@ def create_filter_from_description(description):
     def create_filter(detail):
 
         if detail['filter'] in ['either', 'exclude']:
-            sub_filter = []
+            sub_filter = WurstFilterSet()
 
             for x in detail['args']:
                 sub_filter += create_filter(x)
 
-            return [wurst_functions[detail['filter']](*sub_filter)]
+            w_filter = WurstFilter(wurst_functions[detail['filter']](*sub_filter))
+            w_filter.description = detail
+            w_filter.signature = "{}({})".format(detail['filter'], ", ".join([str(f) for f in sub_filter]))
 
-        return [wurst_functions[detail['filter']](*detail['args'])]
+            return [w_filter]
 
-    this_filter = []
+        w_filter = WurstFilter(wurst_functions[detail['filter']](*detail['args']))
+        w_filter.description = detail
+        w_filter.signature = "{}({})".format(detail['filter'], ", ".join(["'{}'".format(a) for a in detail['args']]))
+
+        return [w_filter]
+
+    this_filter = WurstFilterSet()
+    this_filter.description = description
 
     for x in description:
         this_filter += create_filter(x)

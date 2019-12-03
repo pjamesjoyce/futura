@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>720</width>
+    <height>460</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QPushButton" name="exportButton">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>260</y>
+     <width>180</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>180</width>
+     <height>180</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Export Current Recipe</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="marketsButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>260</y>
+     <width>180</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>180</width>
+     <height>180</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Alter markets</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="technologyFileButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>20</y>
+     <width>180</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>180</width>
+     <height>180</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Add technology from file</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="regionaliseButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>260</y>
+     <width>180</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>180</width>
+     <height>180</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Regionalise</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="technologyManualButton">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>20</y>
+     <width>180</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>180</width>
+     <height>180</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Add technology manually</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="baseDatabaseButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>20</y>
+     <width>180</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>180</width>
+     <height>180</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Test Button</string>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

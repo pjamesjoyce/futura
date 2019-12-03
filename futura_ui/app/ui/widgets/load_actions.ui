@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>720</width>
+    <height>460</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QPushButton" name="loadButton">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>130</y>
+     <width>180</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>180</width>
+     <height>180</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Open Recipe</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="newButton">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>130</y>
+     <width>180</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>180</width>
+     <height>180</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>New Recipe</string>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

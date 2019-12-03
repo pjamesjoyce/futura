@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>866</width>
+    <height>595</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget
+{
+background-color: white;
+}
+QPushButton
+{
+   background-color:white;
+	border:5px solid darkblue;
+	border-radius:15px;
+
+}
+QPushButton:!hover
+{
+   background-color:rgb(250, 250, 250);
+	border:5px solid darkblue;
+	border-radius:15px;
+
+}
+
+QPushButton:!pressed
+{
+   background-color:rgb(240, 240, 240);
+	border-style:inset;
+
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QWidget" name="widget" native="true">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QSplitter" name="splitter">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>866</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_Open_Recipe"/>
+    <addaction name="action_Save_Recipe"/>
+   </widget>
+   <widget class="QMenu" name="menuSetting">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menuSetting"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionNew_Recipe">
+   <property name="text">
+    <string>&amp;New Recipe</string>
+   </property>
+  </action>
+  <action name="action_Open_Recipe">
+   <property name="text">
+    <string>&amp;Open Recipe</string>
+   </property>
+  </action>
+  <action name="action_Save_Recipe">
+   <property name="text">
+    <string>&amp;Save Recipe</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+ <designerdata>
+  <property name="gridDeltaX">
+   <number>20</number>
+  </property>
+  <property name="gridDeltaY">
+   <number>20</number>
+  </property>
+  <property name="gridSnapX">
+   <bool>true</bool>
+  </property>
+  <property name="gridSnapY">
+   <bool>true</bool>
+  </property>
+  <property name="gridVisible">
+   <bool>true</bool>
+  </property>
+ </designerdata>
+</ui>

@@ -24,6 +24,7 @@ requirements:
     - pywin32 # [win]
     - bw2io >=0.7.1
     - wurst
+    - eidl
 
   run:
     - python
@@ -32,6 +33,7 @@ requirements:
     - pyyaml
     - pywin32 # [win]
     - wurst
+    - eidl
 
 about:
   home: https://github.com/pjamesjoyce/futura/

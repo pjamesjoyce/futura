@@ -1,4 +1,4 @@
-from . import warn
+from . import warn, futura_action, session
 from .wrappers import FuturaDatabase
 #import wurst as w
 from . import w
@@ -7,6 +7,7 @@ from itertools import groupby
 from collections import OrderedDict
 import pandas as pd
 import matplotlib.pyplot as plt
+
 
 def add_exchange_to_activity(base_activity, activity_to_link_to):
     exchange_template = {'uncertainty type': 0,
@@ -175,15 +176,19 @@ class FuturaMarket:
     def get_pv(self, process_name):
         return self.process_dict[process_name]['production volume']
 
+    #@futura_action(session)
     def set_pv(self, process_name, new_pv):
         self.process_dict[process_name]['production volume'] = new_pv
 
+    #@futura_action(session)
     def add_pv(self, process_name, new_pv):
         self.process_dict[process_name]['production volume'] += new_pv
 
+    #@futura_action(session)
     def subtract_pv(self, process_name, new_pv):
         self.process_dict[process_name]['production volume'] -= new_pv
 
+    #@futura_action(session)
     def transfer_pv(self, from_name, to_name, factor=None, amount=None):
 
         assert any([factor, amount]), "you need to set either a factor or an amount"
@@ -207,10 +212,12 @@ class FuturaMarket:
             if w.reference_product(process['process'])['production volume'] != process['production volume']:
                 w.reference_product(process['process'])['production volume'] = process['production volume']
 
+    #@futura_action(session)
     def relink(self):
         self.rewrite_pvs()
         update_technosphere_exchanges_from_pvs(self.market, self.database)
 
+    #@futura_action(session)
     def add_alternative_exchanges(self, include_transport=False):
         possibles = find_possible_additional_market_exchanges(self.market, self.database, include_transport)
         for p in possibles:
