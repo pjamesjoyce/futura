@@ -1,12 +1,13 @@
 #import wurst as w
-from . import w
+from . import w, futura_action, session
 
 from futura.wrappers import FuturaDatabase
 
 import warnings
 
+#@futura_action(session)
 def create_regional_activities(base_activity, new_regions, db, production_volumes=None,
-                               remove_production_from_original=True, relink_now = True):
+                               remove_production_from_original=True, relink_now=True):
     if production_volumes:
         assert len(production_volumes) == len(new_regions)
         total_production = 0

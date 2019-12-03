@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>542</width>
+    <height>57</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QComboBox" name="item_box">
+       <item>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Location</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Unit</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Reference product</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Database</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Code</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="filter_box">
+       <item>
+        <property name="text">
+         <string>Equals</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Contains</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Starts with</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Doesn't contain any</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Either</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="search_term"/>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <layout class="QVBoxLayout" name="subFilterLayout"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

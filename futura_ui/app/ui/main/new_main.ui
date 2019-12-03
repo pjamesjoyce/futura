@@ -6,19 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1048</width>
-    <height>639</height>
+    <width>1037</width>
+    <height>645</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">QFrame{
+	background:white;
+	border:1px solid darkblue;
+	border-radius:15px;
+}</string>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QFrame" name="frame">
       <property name="styleSheet">
-       <string notr="true">background:blue</string>
+       <string notr="true">background:white</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -29,12 +36,15 @@
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
         <widget class="QSplitter" name="splitter">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
          <widget class="QFrame" name="frame_2">
           <property name="styleSheet">
-           <string notr="true">background:red
+           <string notr="true">background:white
 </string>
           </property>
           <property name="frameShape">
@@ -60,8 +70,7 @@
            <item>
             <widget class="QFrame" name="frame_4">
              <property name="styleSheet">
-              <string notr="true">background:aliceblue
-</string>
+              <string notr="true"/>
              </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
@@ -69,156 +78,11 @@
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <widget class="QPushButton" name="pushButton">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>20</y>
-                <width>180</width>
-                <height>180</height>
-               </rect>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>180</width>
-                <height>180</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background:lightgreen;
-border:3px solid black;
-border-radius:15px;</string>
-              </property>
-              <property name="text">
-               <string>Open existing recipe</string>
-              </property>
-              <property name="checkable">
-               <bool>false</bool>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-             <widget class="QPushButton" name="pushButton_2">
-              <property name="geometry">
-               <rect>
-                <x>260</x>
-                <y>20</y>
-                <width>180</width>
-                <height>180</height>
-               </rect>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>180</width>
-                <height>180</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background:lightgreen;
-border:3px solid black;
-border-radius:15px;</string>
-              </property>
-              <property name="text">
-               <string>Add database</string>
-              </property>
-             </widget>
-             <widget class="QPushButton" name="pushButton_3">
-              <property name="geometry">
-               <rect>
-                <x>500</x>
-                <y>20</y>
-                <width>180</width>
-                <height>180</height>
-               </rect>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>180</width>
-                <height>180</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background:lightgreen;
-border:3px solid black;
-border-radius:15px;</string>
-              </property>
-              <property name="text">
-               <string>Add technology</string>
-              </property>
-             </widget>
-             <widget class="QPushButton" name="pushButton_4">
-              <property name="geometry">
-               <rect>
-                <x>500</x>
-                <y>260</y>
-                <width>180</width>
-                <height>180</height>
-               </rect>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>180</width>
-                <height>180</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background:lightgreen;
-border:3px solid black;
-border-radius:15px;</string>
-              </property>
-              <property name="text">
-               <string>Modify existing process</string>
-              </property>
-             </widget>
-             <widget class="QPushButton" name="pushButton_5">
-              <property name="geometry">
-               <rect>
-                <x>260</x>
-                <y>260</y>
-                <width>180</width>
-                <height>180</height>
-               </rect>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>180</width>
-                <height>180</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background:lightgreen;
-border:3px solid black;
-border-radius:15px;</string>
-              </property>
-              <property name="text">
-               <string>Alter markets</string>
-              </property>
-             </widget>
-             <widget class="QPushButton" name="pushButton_6">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>260</y>
-                <width>180</width>
-                <height>180</height>
-               </rect>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>180</width>
-                <height>180</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background:lightgreen;
-border:3px solid black;
-border-radius:15px;</string>
-              </property>
-              <property name="text">
-               <string>Regionalise</string>
-              </property>
-             </widget>
+             <layout class="QGridLayout" name="gridLayout_5">
+              <item row="0" column="0">
+               <layout class="QGridLayout" name="actionsLayout"/>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
@@ -231,7 +95,8 @@ border-radius:15px;</string>
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">background:green
+           <string notr="true">background:white
+
 </string>
           </property>
           <property name="frameShape">
@@ -255,7 +120,13 @@ border-radius:15px;</string>
             </widget>
            </item>
            <item>
-            <widget class="QListView" name="listView"/>
+            <widget class="QListView" name="listView">
+             <property name="styleSheet">
+              <string notr="true">background:white;
+border:1px solid darkblue;
+border-radius:5px;</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -271,12 +142,61 @@ border-radius:15px;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1048</width>
+     <width>1037</width>
      <height>26</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionOpen_Recipe"/>
+    <addaction name="separator"/>
+    <addaction name="action_Save_Recipe"/>
+    <addaction name="action_Save_Recipe_2"/>
+   </widget>
+   <widget class="QMenu" name="menuSetting">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionSettings"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menuSetting"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOpen_Recipe">
+   <property name="text">
+    <string>&amp;New Recipe</string>
+   </property>
+  </action>
+  <action name="action_Save_Recipe">
+   <property name="text">
+    <string>&amp;Open Recipe</string>
+   </property>
+  </action>
+  <action name="action_Save_Recipe_2">
+   <property name="text">
+    <string>&amp;Save Recipe</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

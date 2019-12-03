@@ -9,15 +9,22 @@ from .constants import ASSET_PATH
 # import wurst as w
 from . import w
 from .regionalisation import create_regional_activities
-
+from . import session
+from .ecoinvent import check_database
 import os.path
+import brightway2 as bw2
 
 class FuturaLoader:
 
-    def __init__(self, recipe_filepath, autocreate=True):
+    def __init__(self, recipe_filepath=None, autocreate=True):
 
-        self.recipe = self.load_recipe(recipe_filepath)
+        self.recipe = {}
         self.database = None
+
+        if recipe_filepath:
+            self.recipe = self.load_recipe(recipe_filepath)
+        else:
+            autocreate = None
 
         if autocreate:
             self.run()
@@ -42,7 +49,7 @@ class FuturaLoader:
             'extract_excel_data'
         ]
 
-        wd = FuturaDatabase()
+        fd = FuturaDatabase()
 
         for f in self.recipe['load']:
             for k, v in f.items():
@@ -50,12 +57,27 @@ class FuturaLoader:
                 assert k in possible_functions, "{} is not a valid load function".format(k)
 
                 if k == 'extract_bw2_database':
-                    wd.extract_bw2_database(**v)
+                    if not check_database(v['project_name'], v['database_names'][0]):
+
+                        print("The database defined in this recipe doesn't exist")
+                        ecoinvent_version = self.recipe['metadata'].get('ecoinvent_version')
+                        ecoinvent_system_model = self.recipe['metadata'].get('ecoinvent_system_model')
+
+                        if ecoinvent_version and ecoinvent_system_model:
+                            print("The recipe specifies an ecoinvent version "
+                                  "(ecoinvent {} {}), attempting to download this now".format(ecoinvent_version,
+                                                                                              ecoinvent_system_model))
+                            fd.get_ecoinvent(db_name=v['database_names'][0],
+                                             store_download=True,
+                                             version=ecoinvent_version,
+                                             system_model=ecoinvent_system_model)
+                    else:
+                        fd.extract_bw2_database(**v)
 
                 elif k == 'extract_excel_data':
-                    wd.extract_excel_data(**v)
+                    fd.extract_excel_data(**v)
 
-        return wd
+        return fd
 
     def parse_technology_section(self):
 
@@ -104,7 +126,20 @@ class FuturaLoader:
 
                     for item in actual_functions:
                         _ = item['function'](*item['args'], **item['kwargs'])
-                    # technology.add_technology_to_database(self.database, technology_path, actual_functions)
+                    #technology.add_technology_to_database(self.database, technology_path, actual_functions)
+
+                    # if session:
+                    #     signature = {
+                    #         'function': 'add_technology_to_database',
+                    #         'instance': None,
+                    #         'args': [],
+                    #         'kwargs': {
+                    #             'database': self.database,
+                    #             'technology_file': technology_path,
+                    #             'funcs': v['tasks']
+                    #         }
+                    #     }
+                    #     session.session_info.append(signature)
 
                 elif k == 'add_default_CCS_processes':
                     technology.add_default_CCS_processes(self.database)

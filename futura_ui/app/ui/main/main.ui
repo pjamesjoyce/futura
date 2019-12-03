@@ -34,6 +34,11 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <layout class="QGridLayout" name="gridLayout_3"/>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

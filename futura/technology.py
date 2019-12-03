@@ -1,15 +1,16 @@
 from .regionalisation import *
 from functools import partial
-from . import log, warn
+from . import log, warn, session, futura_action
 from .default_filters import *
 from tqdm import tqdm
 from .constants import FULL_CCS_FILE
 from.utils import create_filter_from_description
+from.proxy import WurstProcess
 
-
+@futura_action(session)
 def add_technology_to_database(database, technology_file, funcs):
 
-    assert type(database) == FuturaDatabase, "database needs to be a futura FuturaDatabase"
+    #assert type(database) == FuturaDatabase, "database needs to be a futura FuturaDatabase"
 
     database.extract_excel_data(technology_file)
 
@@ -19,10 +20,12 @@ def add_technology_to_database(database, technology_file, funcs):
 
 def fix_ch_only_processes(database):
 
-    all_carma_filter = [w.equals('database', 'Carma CCS')]
-    all_carma_filter += [w.equals('location', 'GLO')]
+    all_carma_filter_description = [{'filter': 'equals', 'args': ['database', 'Carma CCS']}]
+    all_carma_filter_description += [{'filter': 'equals', 'args': ['location', 'GLO']}]
 
-    all_carma_list = list(w.get_many(database.db, *all_carma_filter))
+    all_carma_filter = create_filter_from_description(all_carma_filter_description)
+
+    all_carma_list = [WurstProcess(x) for x in w.get_many(database.db, *all_carma_filter)]
 
     ch_list = []
     for l in all_carma_list:
@@ -35,25 +38,26 @@ def fix_ch_only_processes(database):
     ch_only_list = list(ch_names_set)
 
     for x in ch_only_list:
-        found = w.get_many(database.db, *[w.contains('name', x)])
+        found = [WurstProcess(x) for x in w.get_many(database.db, *[w.contains('name', x)])]
         found_list = list(found)
         location_list = [l['location'] for l in found_list]
 
         if all(["GLO" not in location_list, "RoW" not in location_list]):
-            ch_only_process = [c for c in found_list if c['location'] == 'CH'][0]
+            ch_only_process = [WurstProcess(c) for c in found_list if c['location'] == 'CH'][0]
             create_regional_activities(ch_only_process, ['GLO'], database.db)
             log("Adding {} [{}]".format(ch_only_process['name'], ch_only_process['location']))
 
     return database
 
 
+#@futura_action(session)
 def regionalise_multiple_processes(database, locations, base_activity_filter, progress_message=None):
 
     if not callable(base_activity_filter[0]):
         print('Creating base_activity_filter from description')
         base_activity_filter = create_filter_from_description(base_activity_filter)
 
-    base_activities = list(w.get_many(database.db, *base_activity_filter))
+    base_activities = [WurstProcess(x) for x in w.get_many(database.db, *base_activity_filter)]
 
     code_list = []
     if not progress_message:
@@ -85,6 +89,7 @@ def regionalise_multiple_processes(database, locations, base_activity_filter, pr
     return database
 
 
+#@futura_action(session)
 def regionalise_based_on_filters(database, location_filter, base_activity_filter, progress_message=None):
 
     location_list = list(w.get_many(database.db, *location_filter))

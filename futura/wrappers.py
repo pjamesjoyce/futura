@@ -1,5 +1,10 @@
 #import wurst as w
+import tempfile
+
+from wurst.brightway.extract_database import add_input_info_for_indigenous_exchanges
+
 from . import w
+from . import session, futura_action, warn
 import brightway2 as bw2
 from .utils import *
 from .storage import storage
@@ -14,7 +19,9 @@ except:
     import pickle
 
 import zlib
-
+from .proxy import WurstDatabase
+from eidl import EcoinventDownloader
+import getpass
 
 class FuturaDatabase:
 
@@ -24,7 +31,7 @@ class FuturaDatabase:
 
     def __init__(self):  # , project_name=None, database_names=None, save_db_file=True):
 
-        self.db = []
+        self.db = WurstDatabase()
         self.database_names = []
 
         """
@@ -46,6 +53,11 @@ class FuturaDatabase:
                 except:
                     print('something went wrong')
         """
+
+    def __repr__(self):
+        return "FuturaDatabase with {} items".format(len(self.db))
+
+    @futura_action(session)
     def extract_bw2_database(self, project_name, database_names):
 
         if isinstance(database_names, str):
@@ -64,6 +76,7 @@ class FuturaDatabase:
 
         self.db.extend(input_db)
 
+    #@futura_action(session)
     def extract_excel_data(self, excelfilepath):
         sp = bw2.ExcelImporter(excelfilepath)
 
@@ -74,8 +87,40 @@ class FuturaDatabase:
         sp.match_database(fields=["name", "unit", "location"])
 
         # make the links to existing data
-        link_iterable_by_fields(sp.data, self.db, fields=["reference product", "name", "unit", "location"])
-        link_iterable_by_fields(sp.data, self.db, fields=["name", "unit", "location"])
+        still_unlinked = link_iterable_by_fields(sp.data, self.db, fields=["reference product", "name", "unit", "location"])
+        still_unlinked = link_iterable_by_fields(still_unlinked, self.db, fields=["name", "unit", "location"])
+
+        # Change GLO to RoW
+        if still_unlinked:
+            for x in still_unlinked:
+                for exc in x.get('exchanges', []):
+                    if not exc.get("input"):
+                        if exc['location'] == 'GLO':
+                            exc['location'] = 'RoW'
+
+            still_unlinked = link_iterable_by_fields(still_unlinked, self.db, fields=["name", "unit", "location"])
+
+        # Make processes less specific, by snipping off trailing descriptions (e.g. ', at user', ', metallurgical' etc.)
+        if still_unlinked:
+            attempts = 2
+            for i in range(attempts):
+                for x in still_unlinked:
+                    for exc in x.get('exchanges', []):
+                        if not exc.get("input"):
+                            if exc['name'].rfind(',') != -1:
+                                exc['name'] = exc['name'][:exc['name'].rfind(',')]
+
+                still_unlinked = link_iterable_by_fields(still_unlinked, self.db, fields=["name", "unit", "location"])
+
+        # Try switching despecified items back to GLO
+        if still_unlinked:
+            for x in still_unlinked:
+                for exc in x.get('exchanges', []):
+                    if not exc.get("input"):
+                        if exc['location'] == 'RoW':
+                            exc['location'] = 'GLO'
+
+            still_unlinked = link_iterable_by_fields(still_unlinked, self.db, fields=["name", "unit", "location"])
 
         if sp.statistics()[2] != 0:
             fp = sp.write_excel()
@@ -86,12 +131,92 @@ class FuturaDatabase:
 
         self.db.extend(sp.data)
 
+    def get_ecoinvent(self, db_name=None, download_path=None, store_download=True, **kwargs):
+
+        """
+        Download and import ecoinvent to FuturaDatabase
+        Optional kwargs:
+            db_name: name to give imported database (string) default is downloaded filename
+            download_path: path to download .7z file to (string) default is download to temporary directory (.7z file is deleted after import)
+            store_download: store the .7z file for later reuse, default is True, only takes effect if no download_path is provided
+            username: ecoinvent username (string)
+            password: ecoivnent password (string)
+            version: ecoinvent version (string), eg '3.5'
+            system_model: ecoinvent system model (string), one of {'cutoff', 'apos', 'consequential'}
+        """
+        username = kwargs.get('username')
+        password = kwargs.get('password')
+        version = str(kwargs.get('version'))
+        system_model = kwargs.get('system_model')
+        write_config = False
+
+        if not username or not password:
+            config = storage.config
+            ecoinvent = config.get('ecoinvent')
+        if not username:
+            if ecoinvent:
+                username = ecoinvent.get('username')
+
+        if not password:
+            if ecoinvent:
+                password = ecoinvent.get('password')
+
+        if not username:
+            username = input('ecoinvent username: ')
+            ecoinvent['username'] = username
+            write_config = True
+
+        if not password:
+            password = getpass.getpass('ecoinvent password: ')
+            ecoinvent['password'] = password
+            write_config = True
+
+        if write_config:
+            storage.write_config(config)
+
+        with tempfile.TemporaryDirectory() as td:
+            if download_path is None:
+                if store_download:
+                    download_path = storage.ecoinvent_dir
+                else:
+                    download_path = td
+
+            downloader = EcoinventDownloader(outdir=download_path,
+                                             username=username,
+                                             password=password,
+                                             version=version,
+                                             system_model=system_model)
+            downloader.run()
+            print('Extracting datasets to temporary directory {}'.format(td))
+            downloader.extract(target_dir=td)
+
+            if not db_name:
+                db_name = "ecoinvent_{}".format(downloader.file_name.replace('.7z', ''))
+            datasets_path = os.path.join(td, 'datasets')
+            importer = bw2.SingleOutputEcospold2Importer(datasets_path, db_name)
+
+        if 'biosphere3' not in bw2.databases:
+            bw2.create_default_biosphere3()
+
+        importer.apply_strategies()
+        datasets, exchanges, unlinked = importer.statistics()
+
+        add_input_info_for_indigenous_exchanges(importer.data, [db_name])
+
+        if not unlinked:
+            self.db.extend(importer.data)
+            self.database_names.append(db_name)
+
     def write_database(self, project, name, overwrite=False):
 
-        assert project in bw2.projects, "That project doesn't exist"
+        if project not in bw2.projects:
+            warn("The project '{}' doesn't exist, it will be created".format(project))
 
         if bw2.projects.current != project:
             bw2.projects.set_current(project)
+
+        if 'biosphere3' not in bw2.databases:
+            bw2.bw2setup()
 
         if name in bw2.databases:
             if not overwrite:

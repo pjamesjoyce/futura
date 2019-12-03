@@ -1,4 +1,6 @@
 import logging
+import wrapt
+from.proxy import WurstProcess
 # import wurst
 import wurst
 import futura.wurst_monkeypatch as wmp
@@ -9,8 +11,19 @@ wurst.transformations.relink_technosphere_exchanges = wmp.relink_technosphere_ex
 wurst.transformations.geo.relink_technosphere_exchanges = wmp.relink_technosphere_exchanges
 wurst.transformations.geo.allocate_inputs = wmp.allocate_inputs
 
+@wrapt.decorator
+def return_WurstProcess(wrapped, instance, args, kwargs):
+    return WurstProcess(wrapped(*args, **kwargs))
+
+
+wurst.get_one = return_WurstProcess(wurst.get_one)
+wurst.searching.get_one = return_WurstProcess(wurst.searching.get_one)
+
 #create w alias for wurst
 w = wurst
+
+from .recipes import *
+session = FuturaSession()
 
 # set up logging to file - see previous section for more details
 logging.basicConfig(level=logging.DEBUG,

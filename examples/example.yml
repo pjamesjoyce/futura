@@ -1,11 +1,13 @@
-{% set base_project = "Prospective_LCA_1" %}
-{% set base_database = "ecoinvent" %}
-{% set output_database = "ecoinvent_plus_CCS" %}
+{% set base_project = "FuturaExample" %}
+{% set base_database = "ecoinvent3_3" %}
+{% set output_database = "ecoinvent3_3_plus_CCS" %}
 
 metadata:
     base_project: {{base_project}}
     base_database: {{base_database}}
     output_database: {{output_database}}
+    ecoinvent_version: 3.3
+    ecoinvent_system_model: cutoff
     description: >
         This Futura recipe loads the ecoinvent 3.3 database, adds Carma CCS projects,
         then alters the British and German high voltage electricity markets to shift

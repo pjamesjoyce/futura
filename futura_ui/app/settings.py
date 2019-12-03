@@ -8,7 +8,7 @@ import appdirs
 import brightway2 as bw
 
 from futura_ui.app.signals import signals
-from .. import PACKAGE_DIRECTORY
+#from .. import PACKAGE_DIRECTORY
 
 
 class BaseSettings(object):
