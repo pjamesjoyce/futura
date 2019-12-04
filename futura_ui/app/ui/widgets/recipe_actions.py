@@ -19,4 +19,6 @@ class RecipeWidget(QtWidgets.QWidget):
         #self.baseDatabaseButton.pressed.connect(signals.show_load_actions.emit)
         self.baseDatabaseButton.pressed.connect(signals.test_filter.emit)
         self.regionaliseButton.pressed.connect(signals.regionalisation_wizard.emit)
+        self.exportButton.pressed.connect(signals.export_recipe.emit)
+        self.technologyFileButton.pressed.connect(signals.add_technology_file.emit)
 

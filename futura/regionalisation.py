@@ -1,11 +1,11 @@
 #import wurst as w
 from . import w, futura_action, session
-
+from .utils import create_filter_from_description
+from .proxy import WurstProcess
 from futura.wrappers import FuturaDatabase
 
 import warnings
 
-#@futura_action(session)
 def create_regional_activities(base_activity, new_regions, db, production_volumes=None,
                                remove_production_from_original=True, relink_now=True):
     if production_volumes:
@@ -71,3 +71,16 @@ def create_regional_activities(base_activity, new_regions, db, production_volume
     #print("Added the following datasets\n{}".format(added_datasets))
     if not relink_now:
         return code_list
+
+
+def create_regional_activities_from_filter(base_activity_filter, new_regions, db, production_volumes=None,
+                                           remove_production_from_original=True, relink_now=True):
+
+    if not callable(base_activity_filter[0]):
+        print('Creating base_activity_filter from description')
+        base_activity_filter = create_filter_from_description(base_activity_filter)
+
+    base_activity = WurstProcess(w.get_one(db, *base_activity_filter))
+
+    create_regional_activities(base_activity, new_regions, db, production_volumes,
+                               remove_production_from_original, relink_now)

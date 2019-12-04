@@ -39,15 +39,20 @@ class FuturaGuiLoader(FuturaLoader):
             self.parse_technology_section()
         yield 2
 
+        if 'regionalisation' in self.recipe.keys():
+            self.parse_regionalisation_section()
+
+        yield 3
+
         if 'markets' in self.recipe.keys():
             self.parse_market_section()
-        yield 3
+        yield 4
 
     def run(self):
         print('starting thread')
         signals.change_status_message.emit('Loading Recipe Data...')
 
-        progress = QProgressDialog('Loading Recipe Data...', None, 0, 4, findMainWindow().centralWidget())
+        progress = QProgressDialog('Loading Recipe Data...', None, 0, 5, findMainWindow().centralWidget())
         progress.setWindowModality(Qt.WindowModal)
         progress.setWindowTitle('Loading...')
         signals.thread_progress.connect(progress.setValue)

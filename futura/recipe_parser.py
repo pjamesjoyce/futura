@@ -8,7 +8,7 @@ from . import technology
 from .constants import ASSET_PATH
 # import wurst as w
 from . import w
-from .regionalisation import create_regional_activities
+from .regionalisation import create_regional_activities, create_regional_activities_from_filter
 from . import session
 from .ecoinvent import check_database
 import os.path
@@ -126,23 +126,35 @@ class FuturaLoader:
 
                     for item in actual_functions:
                         _ = item['function'](*item['args'], **item['kwargs'])
-                    #technology.add_technology_to_database(self.database, technology_path, actual_functions)
-
-                    # if session:
-                    #     signature = {
-                    #         'function': 'add_technology_to_database',
-                    #         'instance': None,
-                    #         'args': [],
-                    #         'kwargs': {
-                    #             'database': self.database,
-                    #             'technology_file': technology_path,
-                    #             'funcs': v['tasks']
-                    #         }
-                    #     }
-                    #     session.session_info.append(signature)
 
                 elif k == 'add_default_CCS_processes':
                     technology.add_default_CCS_processes(self.database)
+
+    def parse_regionalisation_section(self):
+
+        assert 'regionalisation' in self.recipe.keys(), "No regionalisation section to parse"
+
+        function_dict = {
+            'regionalise_multiple_processes': technology.regionalise_multiple_processes,
+            'create_regional_activities': create_regional_activities,
+            'create_regional_activities_from_filter': create_regional_activities_from_filter
+        }
+
+        for f in self.recipe['regionalisation']:
+
+            assert f['function'] in function_dict.keys()
+
+            function = function_dict[f['function']]
+
+            args = f.get('args', [])
+            kwargs = f.get('kwargs', {})
+
+            if f['function'] in ['create_regional_activities', 'create_regional_activities_from_filter']:
+                kwargs['db'] = self.database.db
+            elif f['function'] == 'regionalise_multiple_processes':
+                kwargs['database'] = self.database
+
+            function(*args, **kwargs)
 
     def parse_market_section(self):
 
@@ -187,6 +199,9 @@ class FuturaLoader:
 
         if 'technology' in self.recipe.keys():
             self.parse_technology_section()
+
+        if 'regionalisation' in self.recipe.keys():
+            self.parse_regionalisation_section()
 
         if 'markets' in self.recipe.keys():
             self.parse_market_section()
