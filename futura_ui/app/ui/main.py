@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from PySide2 import QtCore, QtWidgets
+from PySide2 import QtCore, QtWidgets, QtGui
 
 from .utils import load_ui_file
 from .icons import qicons
@@ -23,14 +23,15 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__(None)
 
-        self.loader = FuturaGuiLoader()
-
         ui_path = os.path.join('main', 'new_main_empty.ui')
         ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
 
         load_ui_file(ui_path, self)
 
         self.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+
+        self.loader = FuturaGuiLoader()
+        self.identifier = 'MainWindow'
 
         # Window title
         self.setWindowTitle("{} {}".format(APP_NAME, APP_VERSION))
@@ -61,6 +62,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.icon = qicons.futura
         self.setWindowIcon(self.icon)
 
+
+
         self.connect_signals()
 
         #self.progress = UndefinedProgress('Loading', None, 0, 0, self.centralWidget())
@@ -86,3 +89,9 @@ class MainWindow(QtWidgets.QMainWindow):
         signals.hide_status_progress.connect(self.hide_status_progress)
         signals.change_status_message.connect(self.change_status_message)
         signals.reset_status_message.connect(self.reset_status_message)
+
+        self.load_shortcut = QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+D"), self)
+        #self.load_shortcut.activated.connect(signals.load_loader.emit)  # TODO: Reinstate this
+        self.load_shortcut.activated.connect(signals.load_base.emit)  # TODO: Delete this
+
+

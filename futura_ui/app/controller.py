@@ -12,7 +12,7 @@ from .wrappers import FuturaGuiLoader
 from .utils import findMainWindow
 from .ui.dialogs.new_recipe import NewRecipeDialog
 from .ui.widgets.filter import FilterListerWidget, parse_filter_widget, FilterListerDialog
-from .ui.wizards import RegionalisationWizard
+from .ui.wizards import RegionalisationWizard, MarketsWizard
 
 from futura.utils import create_filter_from_description
 from futura import w
@@ -50,6 +50,7 @@ class Controller(object):
         signals.regionalisation_wizard.connect(self.regionalisation_wizard)
         signals.export_recipe.connect(self.export_recipe)
         signals.add_technology_file.connect(self.add_technology_file)
+        signals.markets_wizard.connect(self.markets_wizard)
 
     # SETTINGS
     def load_settings(self):
@@ -219,3 +220,12 @@ class Controller(object):
             findMainWindow().loader.recipe['technology'].append(recipe_entry)
             print(findMainWindow().loader.recipe)
             signals.update_recipe.emit()
+
+    def markets_wizard(self):
+
+        print('Starting the wizard')
+        mw = MarketsWizard()
+
+        if mw.exec_():
+            print(mw.recipe_section)
+            print('Wizard Complete')

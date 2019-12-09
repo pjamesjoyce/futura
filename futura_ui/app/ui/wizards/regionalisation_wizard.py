@@ -1,4 +1,4 @@
-from PySide2 import QtWidgets
+from PySide2 import QtWidgets, QtCore
 import os
 from ..utils import load_ui_file
 from ..widgets.filter import FilterListerWidget, parse_filter_widget
@@ -22,20 +22,48 @@ class RegionalisationWizard(QtWidgets.QWizard):
         self.location_widget = LocationSelectorWidget()
         self.locationLayout.addWidget(self.location_widget)
 
-        self.currentIdChanged.connect(self.confirm_setup)
+        self.currentIdChanged.connect(self.page_change)
 
-    def confirm_setup(self, id):
-        if id == 2:
-            print("This is the last page")
+    def page_change(self, page_id):
 
-            this_filter = create_filter_from_description(parse_filter_widget(self.filter_widget))
-            db = findMainWindow().loader.database.db
-            this_item = w.get_one(db, *this_filter)
-            print(this_item)
-            item_string = "{} ({}) [{}]".format(this_item['name'], this_item['unit'], this_item['location'])
-            self.processLabel.setText(item_string)
+        if page_id == 1:
+            self.restrict_locations()
 
-            location_list = ", ".join([x['display'] for x in self.location_widget.checked_items])
+        elif page_id == 2:
+            self.confirm_setup()
 
-            self.locationLabel.setText(location_list)
+    def confirm_setup(self):
+        print("This is the last page")
+
+        this_filter = create_filter_from_description(parse_filter_widget(self.filter_widget))
+        db = findMainWindow().loader.database.db
+        this_item = w.get_one(db, *this_filter)
+        print(this_item)
+        item_string = "{} ({}) [{}]".format(this_item['name'], this_item['unit'], this_item['location'])
+        self.processLabel.setText(item_string)
+
+        location_list = ", ".join([x['display'] for x in self.location_widget.checked_items])
+
+        self.locationLabel.setText(location_list)
+
+    def restrict_locations(self):
+        base_filter = parse_filter_widget(self.filter_widget)
+        no_location_filter = [x for x in base_filter if x['args'][0] != 'location']
+        this_filter = create_filter_from_description(base_filter)
+        no_location = create_filter_from_description(no_location_filter)
+        db = findMainWindow().loader.database.db
+        this_item = w.get_one(db, *this_filter)
+        item_location = this_item['location']
+        other_items = w.get_many(db, *no_location)
+        other_locations = [x['location'] for x in other_items]
+
+        other_locations = [x for x in other_locations if x != 'RoW']
+
+        locations = list(set(other_locations + [item_location]))
+
+        print(locations)
+
+        self.location_widget.find_and_disable(locations)
+
+
 

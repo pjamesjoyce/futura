@@ -35,7 +35,8 @@ def parse_filter_widget(widget):
         'Contains': 'contains',
         'Starts with': 'startswith',
         "Doesn't contain any": 'doesnt_contain_any',
-        'Either': 'either'
+        'Either': 'either',
+        'Exclude': 'exclude'
     }
 
     item_dict = {
@@ -50,24 +51,47 @@ def parse_filter_widget(widget):
     filter_description = []
     for f in widget.filter_steps:
 
-        # TODO: add subfilters
-
         this_filter = filter_dict[f.filter_box.currentText()]
         search_text = f.search_term.text()
+        this_item = item_dict[f.item_box.currentText()]
 
-        if this_filter == 'doesnt_contain_any':
+        if this_filter in ['either', 'exclude']:
+            assert f.subfilters
+            subfilter_description = []
+
+            for s in f.subfilters:
+                this_subfilter = filter_dict[s.filter_box.currentText()]
+                sub_search_text = s.search_term.text()
+                this_sub_item = item_dict[s.item_box.currentText()]
+
+                subfilter = {'filter': this_subfilter, 'args': [this_sub_item, sub_search_text]}
+                subfilter_description.append(subfilter)
+
+            result_dict = {
+                'filter': this_filter,
+                'args': subfilter_description
+            }
+
+        elif this_filter == 'doesnt_contain_any':
             split_hierarchy = [';', ',']
             for x in split_hierarchy:
                 if x in search_text:
                     break
             search_text = [i.strip().lstrip() for i in search_text.split(x)]
 
-        result_dict = {
-            'filter': this_filter,
-            'args': [item_dict[f.item_box.currentText()], search_text]
-        }
+            result_dict = {
+                'filter': this_filter,
+                'args': [this_item, search_text]
+            }
+
+        else:
+            result_dict = {
+                'filter': this_filter,
+                'args': [this_item, search_text]
+            }
 
         filter_description.append(result_dict)
+
     return filter_description
 
 

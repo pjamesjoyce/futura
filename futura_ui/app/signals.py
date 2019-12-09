@@ -40,6 +40,10 @@ class Signals(QObject):
 
     regionalisation_wizard = Signal()
 
+    # Markets
+
+    markets_wizard = Signal()
+
     # Recipes
 
     export_recipe = Signal()
@@ -47,6 +51,12 @@ class Signals(QObject):
     # Technology
 
     add_technology_file = Signal()
+
+    # Save/Load
+
+    save_loader = Signal()
+    load_loader = Signal()
+    load_base = Signal()
 
 
 

@@ -21,4 +21,5 @@ class RecipeWidget(QtWidgets.QWidget):
         self.regionaliseButton.pressed.connect(signals.regionalisation_wizard.emit)
         self.exportButton.pressed.connect(signals.export_recipe.emit)
         self.technologyFileButton.pressed.connect(signals.add_technology_file.emit)
+        self.marketsButton.pressed.connect(signals.markets_wizard.emit)
 

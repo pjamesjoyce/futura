@@ -1,4 +1,5 @@
 from .recipemodel import RecipeModel
-from futura.recipe_parser import FuturaLoader
+from .pandasmodel import PandasModel
+#recipe_model = RecipeModel()
 
-recipe_model = RecipeModel()
+

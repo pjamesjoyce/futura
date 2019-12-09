@@ -1,6 +1,9 @@
 from PySide2 import QtWidgets, QtCore
 
-from ...models.geo import LocationModel, global_tree
+try:
+    from ...models.geo import LocationModel, global_tree
+except ImportError:
+    from futura_ui.app.models.geo import LocationModel, global_tree
 
 
 class LocationSelectorWidget(QtWidgets.QWidget):
@@ -23,7 +26,27 @@ class LocationSelectorWidget(QtWidgets.QWidget):
         self.view.setModel(self.model)
         self.view.sortByColumn(0, QtCore.Qt.AscendingOrder)
 
+        self.find_and_disable(['CH'])
+
         layout.addWidget(self.view)
+
+    def find_and_disable(self, locations):
+
+        j = 0
+        while self.model.item(j):
+            for i in self.model.iterItems(self.model.item(j)):
+                i.setEnabled(True)
+            j += 1
+
+        for l in locations:
+            match = self.model.match(self.model.index(0, 0),
+                                     QtCore.Qt.UserRole,
+                                     l,
+                                     1,
+                                     QtCore.Qt.MatchExactly | QtCore.Qt.MatchRecursive)
+            if match:
+                item = self.model.itemFromIndex(match[0])
+                item.setEnabled(False)
 
     def parse_selection(self, item):
 
@@ -40,4 +63,16 @@ class LocationSelectorWidget(QtWidgets.QWidget):
             self.checked_items[:] = [x for x in self.checked_items if x['code'] != item_dict['code']]
 
 
+if __name__ == '__main__':
 
+    import sys
+
+
+    app = QtWidgets.QApplication(sys.argv)
+
+    view = LocationSelectorWidget()
+
+    view.setWindowTitle("TEST")
+    view.show()
+
+    sys.exit(app.exec_())

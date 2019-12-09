@@ -7,5 +7,7 @@ def findMainWindow() -> typing.Union[QMainWindow, None]:
     app = QApplication.instance()
     for widget in app.topLevelWidgets():
         if isinstance(widget, QMainWindow):
-            return widget
+            if getattr(widget, 'identifier', None) == "MainWindow":
+                return widget
+
     return None

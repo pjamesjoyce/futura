@@ -14,14 +14,16 @@ from bw2io.strategies.generic import link_iterable_by_fields
 
 try:
     import _pickle as pickle
-except:
+except ImportError:
     print('falling back on pickle')
     import pickle
 
 import zlib
+
 from .proxy import WurstDatabase
 from eidl import EcoinventDownloader
 import getpass
+
 
 class FuturaDatabase:
 

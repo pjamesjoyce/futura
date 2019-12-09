@@ -1,6 +1,6 @@
 from .frame import FuturaFrame
 from ...signals import signals
-from ...models import recipe_model
+from ...models import RecipeModel
 from PySide2.QtWidgets import QTreeView
 from ...utils import findMainWindow
 
@@ -14,7 +14,8 @@ class RightPanel(FuturaFrame):
 
         self.label.setText('Recipe')
         self.tree_view = QTreeView()
-        self.tree_view.setModel(recipe_model)
+        self.model = RecipeModel()
+        self.tree_view.setModel(self.model)
         self.tree_view.setWordWrap(True)
         self.tree_view.setColumnWidth(0, 50)
 
@@ -27,9 +28,9 @@ class RightPanel(FuturaFrame):
 
     def update_recipe(self):
 
-        recipe_model.parse_recipe(findMainWindow().loader.recipe)
+        self.model.parse_recipe(findMainWindow().loader.recipe)
 
-        if recipe_model.rowCount() == 0:
+        if self.model.rowCount() == 0:
             self.tree_view.header().hide()
         else:
             self.tree_view.header().show()

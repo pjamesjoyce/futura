@@ -115,7 +115,9 @@
         </size>
        </property>
        <property name="text">
-        <string>On this page you will choose the new locations where you would like to make this process available.</string>
+        <string>On this page you will choose the new locations where you would like to make this process available. 
+
+Locations where that process already exists have automatically been disabled.</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>720</width>
+    <width>941</width>
     <height>460</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
   <widget class="QPushButton" name="loadButton">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>350</x>
      <y>130</y>
      <width>180</width>
      <height>180</height>
@@ -64,6 +64,28 @@
    </property>
    <property name="flat">
     <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="loaderButton">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>130</y>
+     <width>180</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>180</width>
+     <height>180</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Open Loader</string>
    </property>
   </widget>
  </widget>

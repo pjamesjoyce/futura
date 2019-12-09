@@ -197,6 +197,17 @@ class LocationModel(QStandardItemModel):
 
         parse(tree, self.parentItem)
 
+    def iterItems(self, root):
+        def recurse(parent):
+            for row in range(parent.rowCount()):
+                for column in range(parent.columnCount()):
+                    child = parent.child(row, column)
+                    yield child
+                    if child.hasChildren():
+                        yield from recurse(child)
+
+        if root is not None:
+            yield from recurse(root)
 
 if __name__ == '__main__':
 

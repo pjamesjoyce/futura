@@ -1,19 +1,15 @@
-from PySide2.QtCore import QTimer, SIGNAL, SLOT
-
 from futura.recipe_parser import FuturaLoader
 from futura.wrappers import FuturaDatabase
 from .signals import signals
 from .ui.dialogs.progress import DefinedProgress
 from .utils import findMainWindow
-from PySide2.QtWidgets import QProgressDialog
+from PySide2.QtWidgets import QProgressDialog, QFileDialog
 from PySide2.QtCore import Qt
 from .threads import FunctionThread, GeneratorThread
-
 
 class FuturaGuiLoader(FuturaLoader):
 
     def __init__(self, *args, **kwargs):
-        print('this is a FuturaGuiLoader')
 
         self.thread = GeneratorThread(self.run_generator, 4)
 
@@ -59,8 +55,46 @@ class FuturaGuiLoader(FuturaLoader):
         self.thread.start()
         print('thread started...')
 
+    def save_dialog(self):
+
+        filename, _ = QFileDialog.getSaveFileName(None,
+                                                  'Save...',
+                                                  # os.path.join(os.path.expanduser('~'), 'Documents'),
+                                                  r'C:\Users\pjjoyce\Dropbox\00_My_Software',
+                                                  "Futura Loader Files (*.fl)")
+        if filename:
+            self.save(filename)
+
+    def load_dialog(self):
+
+        print('load_dialog has been called')
+
+        filename, _ = QFileDialog.getOpenFileName(None,
+                                                  'Open Futura file...',
+                                                  # os.path.join(os.path.expanduser('~'), 'Documents'),
+                                                  r'C:\Users\pjjoyce\Dropbox\00_My_Software',
+                                                  "Futura Loader Files (*.fl)")
+        if filename:
+            self.load(filename)
+
+            signals.update_recipe.emit()
+            signals.show_recipe_actions.emit()
+
+    # TODO: Delete this!
+    def load_base(self):
+        filename = r"C:\Users\pjjoyce\Dropbox\00_My_Software\base.fl"
+        self.load(filename)
+
+        signals.update_recipe.emit()
+        signals.show_recipe_actions.emit()
+
+
+
     def print_progress(self, progress):
         print("##### PROGRESS UPDATE #####\n\n{} steps completed \n\n###############################".format(progress))
 
     def connect_signals(self):
         signals.thread_progress.connect(self.print_progress)
+        signals.save_loader.connect(self.save_dialog)
+        signals.load_loader.connect(self.load_dialog)
+        signals.load_base.connect(self.load_base) # TODO: Delete this

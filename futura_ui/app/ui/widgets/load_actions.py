@@ -15,4 +15,5 @@ class LoadWidget(QtWidgets.QWidget):
 
         self.newButton.pressed.connect(signals.new_recipe.emit)
         self.loadButton.pressed.connect(signals.load_recipe.emit)
+        self.loaderButton.pressed.connect(signals.load_loader.emit)
 
