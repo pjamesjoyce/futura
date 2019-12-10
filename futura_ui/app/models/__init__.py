@@ -1,4 +1,4 @@
-from .recipemodel import RecipeModel
+from .recipemodel import RecipeModel, FuturaRecipePrettifier
 from .pandasmodel import PandasModel
 #recipe_model = RecipeModel()
 

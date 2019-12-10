@@ -14,6 +14,8 @@ DEFAULT_CONFIG = {
     }
 }
 
+DEFAULT_SETUP_PROJECT = 'Futura_SETUP'
+
 # ELECTRICITY_TREE = [build_tree(bw_glo_elec, filters=electricity_markets)]
 # CEMENT_TREE = [build_tree(bw_cement_europe, filters=cement_filter),
 #                build_tree(bw_cement_US, filters=cement_filter),]

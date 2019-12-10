@@ -1,4 +1,4 @@
-from . import warn, futura_action, session
+from . import warn
 from .wrappers import FuturaDatabase
 #import wurst as w
 from . import w

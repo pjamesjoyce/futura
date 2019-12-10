@@ -1,5 +1,7 @@
-from futura.recipe_parser import FuturaLoader
+from futura.loader import FuturaLoader
 from futura.wrappers import FuturaDatabase
+from futura.recipe import FuturaRecipeExecutor
+
 from .signals import signals
 from .ui.dialogs.progress import DefinedProgress
 from .utils import findMainWindow
@@ -11,7 +13,7 @@ class FuturaGuiLoader(FuturaLoader):
 
     def __init__(self, *args, **kwargs):
 
-        self.thread = GeneratorThread(self.run_generator, 4)
+        self.thread = None
 
         super(FuturaGuiLoader, self).__init__(*args, **kwargs)
 
@@ -25,33 +27,25 @@ class FuturaGuiLoader(FuturaLoader):
 
         #self.progress = QProgressDialog('Load', 'cancel', 0, 50, findMainWindow().centralWidget())
 
-    def run_generator(self):
-        yield 0
-
-        self.database = self.parse_load_section()
-        yield 1
-
-        if 'technology' in self.recipe.keys():
-            self.parse_technology_section()
-        yield 2
-
-        if 'regionalisation' in self.recipe.keys():
-            self.parse_regionalisation_section()
-
-        yield 3
-
-        if 'markets' in self.recipe.keys():
-            self.parse_market_section()
-        yield 4
-
     def run(self):
+
+        steps = len(self.recipe.get('actions', [])) * 2
+        print("{} steps in recipe".format(steps))
+
+        executor = FuturaRecipeExecutor(self)
+
+        self.thread = GeneratorThread(executor.recipe_generator, steps)
+
         print('starting thread')
+
         signals.change_status_message.emit('Loading Recipe Data...')
 
-        progress = QProgressDialog('Loading Recipe Data...', None, 0, 5, findMainWindow().centralWidget())
+        progress = QProgressDialog('Loading Recipe Data...', None, 0, steps, findMainWindow().centralWidget())
         progress.setWindowModality(Qt.WindowModal)
         progress.setWindowTitle('Loading...')
+        progress.show()
         signals.thread_progress.connect(progress.setValue)
+        signals.thread_progress.emit(1)
         self.thread.start()
         print('thread started...')
 

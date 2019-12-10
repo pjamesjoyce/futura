@@ -22,8 +22,6 @@ wurst.searching.get_one = return_WurstProcess(wurst.searching.get_one)
 #create w alias for wurst
 w = wurst
 
-from .recipes import *
-session = FuturaSession()
 
 # set up logging to file - see previous section for more details
 logging.basicConfig(level=logging.DEBUG,

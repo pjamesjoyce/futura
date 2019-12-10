@@ -1,13 +1,13 @@
 from .regionalisation import *
 from functools import partial
-from . import log, warn, session, futura_action
+from . import log, warn
 from .default_filters import *
 from tqdm import tqdm
 from .constants import FULL_CCS_FILE
 from.utils import create_filter_from_description
 from.proxy import WurstProcess
 
-@futura_action(session)
+
 def add_technology_to_database(database, technology_file, funcs=None):
 
     assert type(database) == FuturaDatabase, "database needs to be a futura FuturaDatabase"
@@ -55,7 +55,7 @@ def fix_ch_only_processes(database):
     return database
 
 
-#@futura_action(session)
+
 def regionalise_multiple_processes(database, locations, base_activity_filter, progress_message=None):
 
     if not callable(base_activity_filter[0]):
@@ -94,7 +94,6 @@ def regionalise_multiple_processes(database, locations, base_activity_filter, pr
     return database
 
 
-#@futura_action(session)
 def regionalise_based_on_filters(database, location_filter, base_activity_filter, progress_message=None):
 
     location_list = list(w.get_many(database.db, *location_filter))

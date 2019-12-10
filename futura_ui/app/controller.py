@@ -19,9 +19,13 @@ from futura import w
 from futura.regionalisation import create_regional_activities
 from futura.constants import ASSET_PATH
 from futura.technology import add_technology_to_database, fix_ch_only_processes
-
+from futura.recipe import FuturaRecipeExecutor
 import yaml
 
+from copy import deepcopy
+import shutil
+
+from .threads import FunctionThread
 
 class Controller(object):
     """The Controller is a central object in the Activity Browser. It groups methods that may be required in different
@@ -103,6 +107,8 @@ class Controller(object):
             # signals.show_undefined_progress.emit()
 
             findMainWindow().loader = FuturaGuiLoader(filename, autocreate=True)
+            print(findMainWindow().loader)
+            print(findMainWindow().loader.database)
             signals.update_recipe.emit()
             signals.show_recipe_actions.emit()
 
@@ -175,7 +181,6 @@ class Controller(object):
             print('Wizard Cancelled')
 
     def export_recipe(self):
-        recipe = findMainWindow().loader.recipe
 
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(None,
                                                             'Choose a recipe file...',
@@ -183,12 +188,50 @@ class Controller(object):
                                                             r'C:\Users\pjjoyce\Dropbox\00_My_Software',
                                                             "Recipe Files (*.yml *.yaml)")
         if filename:
-            with open(filename, 'w') as f:
-                yaml.safe_dump(recipe, f)
 
+            signals.start_status_progress.emit(0)
+            signals.change_status_message.emit('Exporting recipe...')
+
+            recipe = findMainWindow().loader.recipe
+
+            cp = deepcopy(recipe)
+
+            move_files = []
+
+            for action in cp['actions']:
+                for task in action['tasks']:
+                    k = task.get('kwargs')
+                    if k:
+                        if 'database' in k.keys():
+                            del k['database']
+                        if 'db' in k.keys():
+                            del k['db']
+
+                    if task['function'] == 'add_technology_to_database':
+                        technology_path = task.get('kwargs').get('technology_file')
+                        if technology_path:
+                            split_path, split_name = os.path.split(technology_path)
+                            move_files.append((split_path, split_name))
+                            task['kwargs']['technology_file'] = split_name
+
+            message_text = ""
+            with open(filename, 'w') as f:
+                yaml.safe_dump(cp, f)
+
+            if move_files:
+                base_folder, _ = os.path.split(filename)
+                for f in move_files:
+                    shutil.copy(os.path.join(f[0], f[1]), os.path.join(base_folder, f[1]))
+                    message_text += "{} moved to export folder\n".format(f[1])
+
+            signals.hide_status_progress.emit()
+            signals.reset_status_message.emit()
             message = QtWidgets.QMessageBox()
-            message.setText("Export complete!")
+            message.setText("Export complete!" + "\n{}".format(message_text))
             message.exec_()
+
+
+
 
     def add_technology_file(self):
 
@@ -227,5 +270,12 @@ class Controller(object):
         mw = MarketsWizard()
 
         if mw.exec_():
-            print(mw.recipe_section)
+            print(mw.final_recipe_section)
+            loader = findMainWindow().loader
+            executor = FuturaRecipeExecutor(findMainWindow().loader)
+            executor.execute_recipe_action(mw.final_recipe_section)
+            loader.recipe['actions'].append(mw.final_recipe_section)
+
+            signals.update_recipe.emit()
+
             print('Wizard Complete')

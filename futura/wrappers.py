@@ -4,10 +4,11 @@ import tempfile
 from wurst.brightway.extract_database import add_input_info_for_indigenous_exchanges
 
 from . import w
-from . import session, futura_action, warn
+from . import warn
 import brightway2 as bw2
 from .utils import *
 from .storage import storage
+from .constants import DEFAULT_SETUP_PROJECT
 import os
 from copy import deepcopy
 from bw2io.strategies.generic import link_iterable_by_fields
@@ -59,11 +60,10 @@ class FuturaDatabase:
     def __repr__(self):
         return "FuturaDatabase with {} items".format(len(self.db))
 
-    @futura_action(session)
-    def extract_bw2_database(self, project_name, database_names):
+    def extract_bw2_database(self, project_name, database_name):
 
-        if isinstance(database_names, str):
-            database_names = [database_names]
+        if isinstance(database_name, str):
+            database_names = [database_name]
         assert project_name in bw2.projects, "That project doesn't exist"
         assert isinstance(self.database_names, (list, tuple, set)), "Must pass list of database names"
 
@@ -77,8 +77,8 @@ class FuturaDatabase:
         #remove_nones(input_db)
 
         self.db.extend(input_db)
+        print(self.db)
 
-    #@futura_action(session)
     def extract_excel_data(self, excelfilepath):
         sp = bw2.ExcelImporter(excelfilepath)
 
@@ -197,11 +197,25 @@ class FuturaDatabase:
             datasets_path = os.path.join(td, 'datasets')
             importer = bw2.SingleOutputEcospold2Importer(datasets_path, db_name)
 
+        current_project = bw2.projects.current
+
+        bw2.projects.set_current(DEFAULT_SETUP_PROJECT)
+
         if 'biosphere3' not in bw2.databases:
-            bw2.create_default_biosphere3()
+            bw2.bw2setup()
 
         importer.apply_strategies()
         datasets, exchanges, unlinked = importer.statistics()
+        if not unlinked:
+            importer.write_database()
+
+        bw2.projects.set_current(current_project)
+
+        for ds in importer.data:
+            if 'parameters' in ds.keys():
+                parameters, parameters_full = convert_parameters_to_wurst_style(ds['parameters'])
+                ds['parameters'] = parameters
+                ds['parameters full'] = parameters_full
 
         add_input_info_for_indigenous_exchanges(importer.data, [db_name])
 

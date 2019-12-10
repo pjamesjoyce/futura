@@ -1,5 +1,5 @@
 #import wurst as w
-from . import w, futura_action, session
+from . import w
 from .utils import create_filter_from_description
 from .proxy import WurstProcess
 from futura.wrappers import FuturaDatabase

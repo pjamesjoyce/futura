@@ -109,6 +109,7 @@ class FilterWidget(QtWidgets.QWidget):
         self.filter_box.currentIndexChanged.connect(self.check_subfilter)
 
     def check_subfilter(self, index):
+        
         if self.filter_box.currentText() == 'Either':
             self.add_subfilter()
             self.item_box.setEnabled(False)

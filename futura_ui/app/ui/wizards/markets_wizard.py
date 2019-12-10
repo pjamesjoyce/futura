@@ -5,7 +5,7 @@ from ..widgets.filter import FilterListerWidget, parse_filter_widget
 from ..widgets.geo import LocationSelectorWidget
 from ...utils import findMainWindow
 
-from ...models import PandasModel
+from ...models import PandasModel, FuturaRecipePrettifier
 
 from ..dialogs import EditProductionDialog, TransferProductionDialog
 
@@ -15,6 +15,7 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
 import pandas as pd
+
 
 from futura.utils import create_filter_from_description
 from futura.markets import FuturaMarket, find_possible_additional_market_exchanges
@@ -42,10 +43,28 @@ class MarketsWizard(QtWidgets.QWizard):
         self.dataframe = None
         self.selected_item = None
         self.base_market = None
+        self.base_market_filter = None
 
         self.recipe_section = []
 
         self.connect_signals()
+
+    @property
+    def final_recipe_section(self):
+        recipe = {
+            'action': 'alter_market',
+            'tasks': [{
+                'function': 'set_market',
+                'kwargs': {
+                    'market_filter': self.base_market_filter
+                }
+            }]
+        }
+        recipe['tasks'].extend(self.recipe_section)
+        recipe['tasks'].append({
+            'function': 'relink'
+        })
+        return recipe
 
     def connect_signals(self):
 
@@ -58,6 +77,8 @@ class MarketsWizard(QtWidgets.QWizard):
 
         if page_id == 1:
             self.setup_market()
+        if page_id == 2:
+            self.setup_confirmation()
 
     def setup_market(self):
 
@@ -65,6 +86,7 @@ class MarketsWizard(QtWidgets.QWizard):
         base_filter = parse_filter_widget(self.filter_widget)
 
         full_filter = force_market + base_filter
+        self.base_market_filter = full_filter
         this_filter = create_filter_from_description(full_filter)
         db = findMainWindow().loader.database.db
 
@@ -85,7 +107,19 @@ class MarketsWizard(QtWidgets.QWizard):
     def update_chart(self):
         self.axes.clear()
         print("updating chart")
-        self.model.df.plot(kind='pie', labels=self.model.df['Name'], y='Percentage', legend=None, ax=self.axes)
+        self.model.df.plot(kind='pie',
+                           labels=[',\n'.join(x.split(','))
+                                   if self.model.df['Percentage'][n] > 0.05
+                                   else ''
+                                   for n, x in enumerate(self.model.df['Name'])
+                                   ],
+                           y='Percentage',
+                           legend=None,
+                           title='',
+                           fontsize=8,
+                           ax=self.axes)
+        self.axes.yaxis.set_label_text("")
+
         self.canvas.draw()
 
     def generate_dataframe(self):
@@ -138,8 +172,10 @@ class MarketsWizard(QtWidgets.QWizard):
 
             recipe_item = {
                 'function': 'set_pv',
-                'process_name': self.selected_item[0].data(),
-                'new_pv': dialog.newValueLineEdit.text()
+                'kwargs': {
+                    'process_name': self.selected_item[0].data(),
+                    'new_pv': dialog.newValueLineEdit.text()
+                }
             }
             print(recipe_item)
             self.recipe_section.append(recipe_item)
@@ -150,6 +186,7 @@ class MarketsWizard(QtWidgets.QWizard):
     def update_percentages(self):
         total = self.model.df['Production'].sum()
         self.model.df['Percentage'] = self.model.df['Production'] / total
+        self.model.sort(2, QtCore.Qt.DescendingOrder)
         self.update_chart()
 
     def transfer_production(self):
@@ -172,18 +209,20 @@ class MarketsWizard(QtWidgets.QWizard):
 
             recipe_item = {
                 'function': 'transfer_pv',
-                'from_name': from_name,
-                'to_name': to_name,
+                'kwargs': {
+                    'from_name': from_name,
+                    'to_name': to_name,
+                }
             }
 
             if dialog.percentageRadioButton.isChecked():
                 type = 'factor'
                 amount = float(dialog.newValueLineEdit.text().replace('%',''))/100
-                recipe_item['factor'] = amount
+                recipe_item['kwargs']['factor'] = amount
             else:
                 type = 'amount'
                 amount = float(dialog.newValueLineEdit.text())
-                recipe_item['amount'] = amount
+                recipe_item['kwargs']['amount'] = amount
 
             print(recipe_item)
             self.recipe_section.append(recipe_item)
@@ -244,6 +283,21 @@ class MarketsWizard(QtWidgets.QWizard):
         }
         print(recipe_item)
         self.recipe_section.append(recipe_item)
+
+    def setup_confirmation(self):
+
+        fp = FuturaRecipePrettifier(findMainWindow().loader)
+
+        self.marketLabel.setText("{} ({}) [{}]".format(self.market.market['name'],
+                                                       self.market.market['unit'],
+                                                       self.market.market['location']))
+        confirm_text = ""
+        for e in self.recipe_section:
+            confirm_text += fp.format(e)
+            confirm_text += "\n"
+
+        self.actionLabel.setText(confirm_text)
+        print('please confirm')
 
 
 

@@ -162,3 +162,25 @@ def create_filter_from_description(description, database_filter=None):
         this_filter += create_filter(x)
 
     return this_filter
+
+
+def _list_or_dict(obj):
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            cp = copy.deepcopy(value)
+            cp['name'] = key
+            yield cp
+    else:
+        for tmp in obj:
+            yield(tmp)
+
+
+def convert_parameters_to_wurst_style(parameter_list):
+    parameters =  {
+        obj['name']: obj['amount'] for obj in
+        _list_or_dict(parameter_list)
+    }
+
+    parameters_full = list(_list_or_dict(parameter_list))
+
+    return parameters, parameters_full

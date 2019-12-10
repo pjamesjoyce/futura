@@ -9,7 +9,7 @@ from ..signals import signals
 
 import time
 import os
-from futura.recipe_parser import FuturaLoader
+from futura.loader import FuturaLoader
 
 from .dialogs.progress import UndefinedProgress
 from ..wrappers import FuturaGuiLoader
