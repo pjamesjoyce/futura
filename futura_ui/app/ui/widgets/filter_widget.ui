@@ -79,9 +79,6 @@
        </item>
       </widget>
      </item>
-     <item>
-      <widget class="QLineEdit" name="search_term"/>
-     </item>
     </layout>
    </item>
    <item row="1" column="0">

@@ -39,6 +39,7 @@ class Icons(object):
     futura = create_path('main', 'main_icon.png')
     add = create_path('main', 'add.png')
     remove = create_path('main', 'remove.png')
+    globe = create_path('main', 'globe.png')
 
     # arrows
     # right = create_path('main', 'right.png')

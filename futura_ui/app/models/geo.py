@@ -183,6 +183,11 @@ class LocationModel(QStandardItemModel):
         self.clear()
         self.parentItem = self.invisibleRootItem()
         self.setHorizontalHeaderLabels(['Location'])
+        global_item = QStandardItem()
+        global_item.setData('Global', Qt.DisplayRole)
+        global_item.setData('GLO', Qt.UserRole)
+        global_item.setCheckable(True)
+        self.parentItem.appendRow([global_item])
 
         def parse(this_dict, parent):
 
@@ -195,7 +200,7 @@ class LocationModel(QStandardItemModel):
                 parent.appendRow([item])
                 parse(v, item)
 
-        parse(tree, self.parentItem)
+        parse(tree, global_item)
 
     def iterItems(self, root):
         def recurse(parent):

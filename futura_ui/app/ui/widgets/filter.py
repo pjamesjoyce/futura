@@ -19,6 +19,8 @@ try:
 except ImportError:
     from futura_ui.app.utils import findMainWindow
 
+from ..widgets import LocationInputWidget
+
 from PySide2.QtCore import Signal
 
 from futura.utils import create_filter_from_description
@@ -52,7 +54,16 @@ def parse_filter_widget(widget):
     for f in widget.filter_steps:
 
         this_filter = filter_dict[f.filter_box.currentText()]
-        search_text = f.search_term.text()
+
+        input_widget = f.input_widgets.get(f.item_box.currentText(), f.search_term)
+
+        if isinstance(input_widget, QtWidgets.QComboBox):
+            search_text = input_widget.currentText()
+        elif isinstance(input_widget, QtWidgets.QLineEdit):
+            search_text = input_widget.text()
+        else:
+            search_text = input_widget.text()
+
         this_item = item_dict[f.item_box.currentText()]
 
         if this_filter in ['either', 'exclude']:
@@ -61,7 +72,16 @@ def parse_filter_widget(widget):
 
             for s in f.subfilters:
                 this_subfilter = filter_dict[s.filter_box.currentText()]
-                sub_search_text = s.search_term.text()
+
+                input_widget = s.input_widgets.get(s.item_box.currentText(), s.search_term)
+
+                if isinstance(input_widget, QtWidgets.QComboBox):
+                    sub_search_text = input_widget.currentText()
+                elif isinstance(input_widget, QtWidgets.QLineEdit):
+                    sub_search_text = input_widget.text()
+                else:
+                    sub_search_text = input_widget.text()
+
                 this_sub_item = item_dict[s.item_box.currentText()]
 
                 subfilter = {'filter': this_subfilter, 'args': [this_sub_item, sub_search_text]}
@@ -107,17 +127,46 @@ class FilterWidget(QtWidgets.QWidget):
         self.subfilters = []
 
         self.filter_box.currentIndexChanged.connect(self.check_subfilter)
+        self.item_box.currentIndexChanged.connect(self.check_item_type)
+
+        self.search_term = QtWidgets.QLineEdit()
+        self.database_choice = QtWidgets.QComboBox()
+        self.database_choice.addItems(findMainWindow().loader.database.database_names)
+        self.location_widget = LocationInputWidget()
+
+        self.input_widgets = {
+            'Database': self.database_choice,
+            'Location': self.location_widget,
+            'Other': self.search_term
+        }
+        for k, widget in self.input_widgets.items():
+            self.horizontalLayout.addWidget(widget)
+            if k != 'Other':
+                widget.hide()
+
+    def check_item_type(self):
+        for k, widget in self.input_widgets.items():
+            widget.hide()
+        input_widget = self.input_widgets.get(self.item_box.currentText(), self.search_term)
+        input_widget.show()
+        self.item_box.setEnabled(True)
+
+        if self.item_box.currentText() == 'Database':
+            self.filter_box.setCurrentIndex(0)
+            self.filter_box.setEnabled(False)
+        else:
+            self.filter_box.setEnabled(True)
 
     def check_subfilter(self, index):
-        
+
         if self.filter_box.currentText() == 'Either':
             self.add_subfilter()
             self.item_box.setEnabled(False)
-            self.search_term.hide()
+            for k, widget in self.input_widgets.items():
+                widget.hide()
         else:
             self.clear_subfilters()
-            self.search_term.show()
-            self.item_box.setEnabled(True)
+            self.check_item_type()
 
     def add_subfilter(self):
         self.subfilters.append(SubFilterWidget())
@@ -137,11 +186,41 @@ class SubFilterWidget(QtWidgets.QWidget):
         ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
         load_ui_file(ui_path, self)
 
+        self.search_term = QtWidgets.QLineEdit()
+        self.database_choice = QtWidgets.QComboBox()
+        self.database_choice.addItems(findMainWindow().loader.database.database_names)
+        self.location_widget = LocationInputWidget()
+
+        self.input_widgets = {
+            'Database': self.database_choice,
+            'Location': self.location_widget,
+            'Other': self.search_term
+        }
+        for k, widget in self.input_widgets.items():
+            self.horizontalLayout.addWidget(widget)
+            if k != 'Other':
+                widget.hide()
+
         self.subaddButton.setIcon(qicons.add)
         self.subaddButton.pressed.connect(self.add_another)
 
         self.subremoveButton.setIcon(qicons.remove)
         self.subremoveButton.pressed.connect(self.remove_me)
+
+        self.item_box.currentIndexChanged.connect(self.check_item_type)
+
+    def check_item_type(self):
+        for k, widget in self.input_widgets.items():
+            widget.hide()
+        input_widget = self.input_widgets.get(self.item_box.currentText(), self.search_term)
+        input_widget.show()
+        self.item_box.setEnabled(True)
+
+        if self.item_box.currentText() == 'Database':
+            self.filter_box.setCurrentIndex(0)
+            self.filter_box.setEnabled(False)
+        else:
+            self.filter_box.setEnabled(True)
 
     def remove_me(self):
         if len(self.parent().subfilters) != 1:

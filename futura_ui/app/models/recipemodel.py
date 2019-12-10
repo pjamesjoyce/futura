@@ -5,6 +5,7 @@ from futura.utils import create_filter_from_description
 from futura import w
 from ..utils import findMainWindow
 
+
 class FuturaRecipePrettifier:
     def __init__(self, loader):
         self.masks = {
@@ -22,7 +23,7 @@ class FuturaRecipePrettifier:
             'add_natural_gas_ccs': 'Add natural gas CCS to all producing regions',
             'add_wood_ccs': 'Add wood CCS to all producing regions',
             'regionalise_multiple_processes': 'Regionalise multiple processes\n'
-                                              'Processes:\n'
+                                              'Base processes:\n'
                                               '{base_activity_filter}\n'
                                               'Locations: {locations}',
             'create_regional_activities_from_filter': 'Create regional activities\n'
@@ -44,13 +45,15 @@ class FuturaRecipePrettifier:
 
         for k, v in copy_kwargs.items():
             if "_filter" in k:
+                print(k)
                 this_filter = create_filter_from_description(v)
                 these_items = list(w.get_many(self.loader.database.db, *this_filter))
                 string = '\n'.join(['{name} ({unit}) [{location}]'.format(**x) for x in these_items])
                 copy_kwargs[k] = string
             elif isinstance(v, list):
-                # print("{} is a list".format(v))
-                copy_kwargs[k] = ', '.join(v)
+                print("{} is a list".format(v))
+                if k not in ['database', 'db']:
+                    copy_kwargs[k] = ', '.join(v)
 
         if function == 'transfer_pv':
             if 'factor' in copy_kwargs.keys():

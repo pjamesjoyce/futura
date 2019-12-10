@@ -20,6 +20,7 @@ from futura.regionalisation import create_regional_activities
 from futura.constants import ASSET_PATH
 from futura.technology import add_technology_to_database, fix_ch_only_processes
 from futura.recipe import FuturaRecipeExecutor
+from futura.proxy import WurstProcess
 import yaml
 
 from copy import deepcopy
@@ -86,6 +87,7 @@ class Controller(object):
                     'ecoinvent_system_model': ecoinvent_system_model,
                     'description': description
                 },
+                'actions': []
             }
 
             signals.update_recipe.emit()
@@ -109,8 +111,8 @@ class Controller(object):
             findMainWindow().loader = FuturaGuiLoader(filename, autocreate=True)
             print(findMainWindow().loader)
             print(findMainWindow().loader.database)
-            signals.update_recipe.emit()
-            signals.show_recipe_actions.emit()
+            #signals.update_recipe.emit()
+            #signals.show_recipe_actions.emit()
 
             # signals.close_undefined_progress.emit()
 
@@ -139,27 +141,52 @@ class Controller(object):
             print(filter_description)
             this_filter = create_filter_from_description(filter_description)
             db = findMainWindow().loader.database.db
-            this_item = w.get_one(db, *this_filter)
-            print(this_item)
+
+            this_item_set = [WurstProcess(x) for x in w.get_many(db, *this_filter)]
+
+            #this_item = w.get_one(db, *this_filter)
+            #print(this_item)
 
             location_code_list = [x['code'] for x in rw.location_widget.checked_items]
 
-            create_regional_activities(this_item, location_code_list, db)
+            if len(this_item_set) == 1:
 
-            recipe_entry = {
-                'function': 'create_regional_activities_from_filter',
-                'kwargs': {
-                    'new_regions': location_code_list,
-                    'base_activity_filter': filter_description,
+                recipe_entry = {
+                    'action': 'regionalisation',
+                    'tasks': [
+                        {
+                            'function': 'create_regional_activities_from_filter',
+                            'kwargs': {
+                                'new_regions': location_code_list,
+                                'base_activity_filter': filter_description,
+                            }
+                        }
+                    ]
                 }
-            }
 
-            if not findMainWindow().loader.recipe.get('regionalisation'):
-                findMainWindow().loader.recipe['regionalisation'] = []
+            else:
 
-            findMainWindow().loader.recipe['regionalisation'].append(recipe_entry)
-            print(findMainWindow().loader.recipe)
+                recipe_entry = {
+                    'action': 'regionalisation',
+                    'tasks': [
+                        {
+                            'function': 'regionalise_multiple_processes',
+                            'kwargs': {
+                                'locations': location_code_list,
+                                'base_activity_filter': filter_description,
+                            }
+                        }
+                    ]
+                }
+
+            loader = findMainWindow().loader
+            executor = FuturaRecipeExecutor(findMainWindow().loader)
+            executor.execute_recipe_action(recipe_entry)
+            loader.recipe['actions'].append(recipe_entry)
+
             signals.update_recipe.emit()
+
+            # create_regional_activities(this_item, location_code_list, db)
 
             no_location_filter_description = [x for x in filter_description if x['args'][0] != 'location']
             new_locations_filter_description = [{'filter': 'equals', 'args': ['location', l]} for l in
@@ -230,9 +257,6 @@ class Controller(object):
             message.setText("Export complete!" + "\n{}".format(message_text))
             message.exec_()
 
-
-
-
     def add_technology_file(self):
 
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(None,
@@ -246,21 +270,25 @@ class Controller(object):
 
             add_technology_to_database(findMainWindow().loader.database, filename, default_funcs)
 
-            recipe_entry = {'add_technology_to_database':
-                                {'technology_file': filename,
-                                 'tasks': [
-                                     {
-                                         'function': 'fix_ch_only_processes',
-                                         'args': []
-                                     }
-                                 ]
-                                 }
-                            }
+            recipe_entry = {
+                'action': 'add_technology',
+                'tasks': [
+                    {
+                        'function': 'add_technology_to_database',
+                        'kwargs': {
+                            'technology_file': filename
+                        }
+                    },
+                    {
+                        'function': 'fix_ch_only_processes',
+                    }
+                ]
+            }
 
-            if not findMainWindow().loader.recipe.get('technology'):
-                findMainWindow().loader.recipe['technology'] = []
+            if not findMainWindow().loader.recipe.get('actions'):
+                findMainWindow().loader.recipe['actions'] = []
 
-            findMainWindow().loader.recipe['technology'].append(recipe_entry)
+            findMainWindow().loader.recipe['actions'].append(recipe_entry)
             print(findMainWindow().loader.recipe)
             signals.update_recipe.emit()
 

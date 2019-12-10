@@ -7,6 +7,7 @@ from ...utils import findMainWindow
 
 from futura.utils import create_filter_from_description
 from futura import w
+from futura.proxy import WurstProcess
 
 class RegionalisationWizard(QtWidgets.QWizard):
     def __init__(self, parent=None):
@@ -37,10 +38,23 @@ class RegionalisationWizard(QtWidgets.QWizard):
 
         this_filter = create_filter_from_description(parse_filter_widget(self.filter_widget))
         db = findMainWindow().loader.database.db
-        this_item = w.get_one(db, *this_filter)
-        print(this_item)
-        item_string = "{} ({}) [{}]".format(this_item['name'], this_item['unit'], this_item['location'])
+
+        this_item_set = [WurstProcess(x) for x in w.get_many(db, *this_filter)]
+
+        #this_item = w.get_one(db, *this_filter)
+        print(this_item_set)
+
+        item_string = ""
+        for n, this_item in enumerate(this_item_set):
+            item_string += "{} ({}) [{}]".format(this_item['name'], this_item['unit'], this_item['location'])
+            if n != len(this_item_set):
+                item_string += "\n"
+
         self.processLabel.setText(item_string)
+        if len(this_item_set) > 1:
+            self.processDescriptionLabel.setText('Base processes: ')
+        else:
+            self.processDescriptionLabel.setText('Base process: ')
 
         location_list = ", ".join([x['display'] for x in self.location_widget.checked_items])
 

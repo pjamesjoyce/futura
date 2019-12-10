@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>542</width>
-    <height>48</height>
+    <height>52</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -112,9 +112,6 @@
         </property>
        </item>
       </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="search_term"/>
      </item>
     </layout>
    </item>

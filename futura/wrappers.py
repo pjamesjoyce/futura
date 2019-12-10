@@ -132,6 +132,7 @@ class FuturaDatabase:
         fix_products_and_locations_external(sp.data, self.db)
 
         self.db.extend(sp.data)
+        self.database_names.append(sp.db_name)
 
     def get_ecoinvent(self, db_name=None, download_path=None, store_download=True, **kwargs):
 

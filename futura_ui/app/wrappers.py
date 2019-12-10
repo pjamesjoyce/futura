@@ -34,7 +34,14 @@ class FuturaGuiLoader(FuturaLoader):
 
         executor = FuturaRecipeExecutor(self)
 
-        self.thread = GeneratorThread(executor.recipe_generator, steps)
+        def run():
+            for i in executor.recipe_generator():
+                print (i['message'])
+                yield i
+            signals.update_recipe.emit()
+            signals.show_recipe_actions.emit()
+
+        self.thread = GeneratorThread(run, steps)
 
         print('starting thread')
 
