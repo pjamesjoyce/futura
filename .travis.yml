@@ -46,13 +46,13 @@ after_success:
       echo $TRAVIS_BRANCH
       echo $TRAVIS_PULL_REQUEST
 
-      if [ "$TRAVIS_BRANCH" = "development" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+      if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
         conda install anaconda-client;
         cp /home/travis/miniconda/conda-bld/noarch/*.tar.bz2 .;
         anaconda -t $CONDA_TOKEN upload --force *.tar.bz2;
         echo "uploaded to conda channel";
       else
-        echo "no upload because not development branch";
+        echo "no upload because not master branch";
      fi
    else
     echo "no upload from osx";
