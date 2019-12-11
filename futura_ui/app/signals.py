@@ -3,7 +3,7 @@ from PySide2.QtCore import QObject, Signal
 
 
 class Signals(QObject):
-    """ Signals used for the Activity Browser should be defined here.
+    """ Signals used for Futura should be defined here.
     While arguments can be passed to signals, it is good practice not to do this if possible. """
 
     # Change action display
@@ -58,7 +58,17 @@ class Signals(QObject):
     load_loader = Signal()
     load_base = Signal()
 
+    # Base data
 
+    add_base_database = Signal()
+
+    # Export to Brightway
+
+    export_to_brightway = Signal()
+
+    #test
+
+    temp_message_signal = Signal()
 
 
 signals = Signals()

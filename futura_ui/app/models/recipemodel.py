@@ -14,6 +14,9 @@ class FuturaRecipePrettifier:
                                     'Database: {database_name}',
             'extract_excel_data': 'Extract data from Excel file\n'
                                   'File: {excelfilepath}',
+            'get_ecoinvent': 'Load base ecoinvent database\n'
+                             'Version: {version}\n'
+                             'System model: {system_model}',
             'add_technology_to_database': 'Add technology to database\n'
                                           'File: {technology_file}',
             'add_default_CCS_processes': 'Add all default CCS technologies to all producing regions',
@@ -89,6 +92,10 @@ class RecipeModel(QStandardItemModel):
         self.parentItem = self.invisibleRootItem()
 
         parentItem = self.parentItem
+
+        for m, v in recipe.get('metadata', {}).items():
+            item = QStandardItem('{}: {}'.format(m, v))
+            parentItem.appendRow(item)
 
         fp = FuturaRecipePrettifier(findMainWindow().loader)
 

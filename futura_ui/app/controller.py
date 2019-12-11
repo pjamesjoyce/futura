@@ -10,7 +10,7 @@ from .ui.dialogs.progress import UndefinedProgress
 from .wrappers import FuturaGuiLoader
 
 from .utils import findMainWindow
-from .ui.dialogs.new_recipe import NewRecipeDialog
+from .ui.dialogs import BaseDatabaseDialog, NewRecipeDialog, EcoinventLoginDialog, BrightwayDialog
 from .ui.widgets.filter import FilterListerWidget, parse_filter_widget, FilterListerDialog
 from .ui.wizards import RegionalisationWizard, MarketsWizard
 
@@ -21,12 +21,15 @@ from futura.constants import ASSET_PATH
 from futura.technology import add_technology_to_database, fix_ch_only_processes
 from futura.recipe import FuturaRecipeExecutor
 from futura.proxy import WurstProcess
+from futura.storage import storage
 import yaml
 
 from copy import deepcopy
 import shutil
 
-from .threads import FunctionThread
+from .threads import FunctionThread, GeneratorThread
+
+from bw2data import projects
 
 class Controller(object):
     """The Controller is a central object in the Activity Browser. It groups methods that may be required in different
@@ -41,8 +44,7 @@ class Controller(object):
 
     def __init__(self):
         self.connect_signals()  # connect the signals the app requires - this is what the app does
-        self.load_settings()  # load settings
-        self.db_wizard = None  # create an attribute for the db_wizard
+        self.thread = None
 
     def connect_signals(self):
         # Note - these need to be set up in the signals file too
@@ -56,13 +58,8 @@ class Controller(object):
         signals.export_recipe.connect(self.export_recipe)
         signals.add_technology_file.connect(self.add_technology_file)
         signals.markets_wizard.connect(self.markets_wizard)
-
-    # SETTINGS
-    def load_settings(self):
-        if futura_settings.settings:
-            print("Loading user settings:")
-            # self.switch_brightway2_dir_path(dirpath=futura_settings.custom_bw_dir)
-            # self.change_project(futura_settings.startup_project)
+        signals.add_base_database.connect(self.add_base_database_dialog)
+        signals.export_to_brightway.connect(self.export_to_brightway)
 
     # Specific functions to do things go here, within the controller class
 
@@ -80,6 +77,18 @@ class Controller(object):
             ecoinvent_system_model = new_recipe_dialog.ecoinvent_system_model.currentText()
             description = new_recipe_dialog.description.toPlainText()
 
+            conversion_dict = {
+                'Allocation at the point of substitution (APOS)': 'apos',
+                'Consequential': 'consequential'
+            }
+
+            if ecoinvent_version == '3.6':
+                conversion_dict['Cut-off'] = 'cut-off'
+            else:
+                conversion_dict['Cut-off'] = 'cutoff'
+
+            ecoinvent_system_model = conversion_dict[new_recipe_dialog.ecoinvent_system_model.currentText()]
+
             findMainWindow().loader.recipe = {
                 'metadata': {
                     'output_database': name,
@@ -90,8 +99,34 @@ class Controller(object):
                 'actions': []
             }
 
-            signals.update_recipe.emit()
-            signals.show_recipe_actions.emit()
+            message = QtWidgets.QMessageBox()
+            message.setWindowTitle("Load ecoinvent?")
+            message.setText(
+                "Would you like to add the ecoinvent {} {} database to the recipe now?".format(
+                    ecoinvent_version,
+                    ecoinvent_system_model
+                )
+            )
+            message.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+            message.setDefaultButton(QtWidgets.QMessageBox.No)
+
+            if message.exec_() == QtWidgets.QMessageBox.Yes:
+                print("loading ecoinvent {} {}".format(ecoinvent_version, ecoinvent_system_model))
+
+                check, username, password = self.check_ecoinvent_details()
+
+                if check:
+                    self.add_base_database(ecoinvent_version, ecoinvent_system_model,
+                                           username=username, password=password)
+
+                else:
+                    QtWidgets.QMessageBox('Check your ecoinvent login details')
+
+            else:
+
+                signals.update_recipe.emit()
+                signals.show_recipe_actions.emit()
+                signals.reset_status_message.emit()
 
         else:
             print('Cancelling')
@@ -203,6 +238,7 @@ class Controller(object):
             message.setInformativeText(
                 "\n".join(["{} ({}) [{}]".format(x['name'], x['unit'], x['location']) for x in result]))
             message.exec_()
+            signals.reset_status_message.emit()
 
         else:
             print('Wizard Cancelled')
@@ -291,6 +327,7 @@ class Controller(object):
             findMainWindow().loader.recipe['actions'].append(recipe_entry)
             print(findMainWindow().loader.recipe)
             signals.update_recipe.emit()
+            signals.reset_status_message.emit()
 
     def markets_wizard(self):
 
@@ -305,5 +342,169 @@ class Controller(object):
             loader.recipe['actions'].append(mw.final_recipe_section)
 
             signals.update_recipe.emit()
+            signals.reset_status_message.emit()
 
             print('Wizard Complete')
+
+    def add_base_database_dialog(self):
+        dialog = BaseDatabaseDialog()
+
+        if dialog.exec_():
+            version = dialog.ecoinvent_version.currentText()
+
+            conversion_dict = {
+                'Allocation at the point of substitution (APOS)': 'apos',
+                'Consequential': 'consequential'
+            }
+
+            if version == '3.6':
+                conversion_dict['Cut-off'] = 'cut-off'
+            else:
+                conversion_dict['Cut-off'] = 'cutoff'
+
+            system_model = conversion_dict[dialog.ecoinvent_system_model.currentText()]
+
+            check, username, password = self.check_ecoinvent_details()
+
+            if check:
+
+                self.add_base_database(version, system_model, username=username, password=password)
+
+            else:
+                QtWidgets.QMessageBox('Check your ecoinvent login details')
+
+    def add_base_database(self, version, system_model, **kwargs):
+
+            recipe_entry = {
+                'action': 'load',
+                'tasks': [
+                    {
+                        'function': 'get_ecoinvent',
+                        'kwargs': {
+                            'version': version,
+                            'system_model': system_model
+                        }
+                    },
+                ]
+            }
+
+            signals.start_status_progress.emit(0)
+            signals.change_status_message.emit('Loading ecoinvent {} {}...'.format(version, system_model))
+
+            loader = findMainWindow().loader
+            executor = FuturaRecipeExecutor(findMainWindow().loader)
+
+            def run():
+                QtWidgets.QApplication.processEvents()
+                yield 'starting'
+                executor.execute_recipe_action(recipe_entry, **kwargs)
+                yield 'finishing'
+                loader.recipe['actions'].append(recipe_entry)
+                signals.hide_status_progress.emit()
+                signals.update_recipe.emit()
+                signals.reset_status_message.emit()
+                signals.show_recipe_actions.emit()
+
+            self.thread = GeneratorThread(run, 2)
+            QtWidgets.QApplication.processEvents()
+            self.thread.start()
+
+    def check_ecoinvent_details(self):
+
+        config = storage.config
+        username = None
+        password = None
+        ecoinvent = config.get('ecoinvent')
+
+        if ecoinvent:
+            username = ecoinvent.get('username')
+
+        if ecoinvent:
+            password = ecoinvent.get('password')
+
+        if username and password:
+            return True, username, password
+        else:
+            # dialog goes here
+            dialog = EcoinventLoginDialog()
+
+            if dialog.exec_():
+
+                username = dialog.usernameLineEdit.text()
+                password = dialog.passwordLineEdit.text()
+                write_config = dialog.saveCheckBox.isChecked()
+
+                # check if the login details work here
+
+                if write_config:
+                    config['ecoinvent']['username'] = username
+                    config['ecoinvent']['password'] = password
+
+                    storage.write_config(config)
+
+                return True, username, password
+
+            else:
+                return False, None, None
+
+    def export_to_brightway(self):
+        loader = findMainWindow().loader
+
+        recipe = loader.recipe
+
+        base_project = recipe['metadata'].get('base_project')
+        output_database = recipe['metadata'].get('output_database')
+
+        brightway_dialog = BrightwayDialog()
+        project_list = [p.name for p in sorted(projects)]
+
+        brightway_dialog.existingComboBox.addItems(project_list)
+
+        if base_project:
+            if base_project in sorted(project_list):
+                brightway_dialog.existingComboBox.setCurrentText(base_project)
+                brightway_dialog.existingRadioButton.setChecked(True)
+            else:
+                brightway_dialog.newLineEdit.setText(base_project)
+                brightway_dialog.newRadioButton.setChecked(True)
+
+        if output_database:
+            brightway_dialog.databaseLineEdit.setText(output_database)
+
+        if brightway_dialog.exec_():
+            if brightway_dialog.existingRadioButton.isChecked():
+                project = brightway_dialog.existingComboBox.currentText()
+            elif brightway_dialog.newRadioButton.isChecked():
+                project = brightway_dialog.newLineEdit.text()
+            else:
+                print('something is wrong')
+                return
+
+            database = brightway_dialog.databaseLineEdit.text()
+
+            signals.change_status_message.emit('Exporting to Brightway...')
+            signals.start_status_progress.emit(0)
+
+            def done():
+                message = QtWidgets.QMessageBox()
+                message.setText('Done!')
+                message.exec_()
+
+            #temp_message_signal = QtCore.Signal()
+            signals.temp_message_signal.connect(done)
+
+            def run():
+                QtWidgets.QApplication.processEvents()
+                yield 'starting'
+                loader.database.write_database(project, database, True)
+                yield 'done'
+
+                signals.reset_status_message.emit()
+                signals.hide_status_progress.emit()
+                signals.hide_status_progress.emit()
+                signals.temp_message_signal.emit()
+
+            self.thread = GeneratorThread(run)
+            self.thread.start()
+
+

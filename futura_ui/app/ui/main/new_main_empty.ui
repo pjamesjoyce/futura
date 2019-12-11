@@ -14,31 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget
-{
-background-color: white;
-}
-QPushButton
-{
-   background-color:white;
-	border:5px solid darkblue;
-	border-radius:15px;
-
-}
-QPushButton:!hover
-{
-   background-color:rgb(250, 250, 250);
-	border:5px solid darkblue;
-	border-radius:15px;
-
-}
-
-QPushButton:!pressed
-{
-   background-color:rgb(240, 240, 240);
-	border-style:inset;
-
-}</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">

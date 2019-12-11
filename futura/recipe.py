@@ -38,7 +38,8 @@ class FuturaRecipeExecutor:
             'load':
                 {
                     'extract_bw2_database': None,  # self.loader.database.extract_bw2_database,
-                    'extract_excel_data': None  # self.loader.database.extract_excel_data
+                    'extract_excel_data': None,  # self.loader.database.extract_excel_data
+                    'get_ecoinvent': None
                 },
             'add_technology':
                 {
@@ -74,6 +75,7 @@ class FuturaRecipeExecutor:
         if self.loader:
             base_actions['load']['extract_bw2_database'] = self.database.extract_bw2_database
             base_actions['load']['extract_excel_data'] = self.database.extract_excel_data
+            base_actions['load']['get_ecoinvent'] = self.database.get_ecoinvent
 
         return base_actions
 
@@ -113,10 +115,13 @@ class FuturaRecipeExecutor:
         assert isinstance(market, FuturaMarket)
         self.market = market
 
-    def execute_recipe_action(self, recipe_action):
+    def execute_recipe_action(self, recipe_action, **kwargs):
 
         for task in recipe_action['tasks']:
-            extra_kwargs = {}
+            if kwargs:
+                extra_kwargs = kwargs
+            else:
+                extra_kwargs = {}
 
             if task['function'] in self.database_functions:
                 extra_kwargs['database'] = self.loader.database

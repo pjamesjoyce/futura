@@ -120,7 +120,7 @@
     <string notr="true"/>
    </property>
    <property name="text">
-    <string>Add technology manually</string>
+    <string>Test Button</string>
    </property>
   </widget>
   <widget class="QPushButton" name="baseDatabaseButton">
@@ -142,7 +142,7 @@
     <string notr="true"/>
    </property>
    <property name="text">
-    <string>Test Button</string>
+    <string>Add base database</string>
    </property>
    <property name="checkable">
     <bool>false</bool>

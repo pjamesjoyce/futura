@@ -69,6 +69,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.progress = UndefinedProgress('Loading', None, 0, 0, self.centralWidget())
 
     def start_status_progress(self, maximum):
+        print('Signal received - starting the progress bar')
         self.progress_bar.setMaximum(maximum)
         self.progress_bar.setValue(0)
         self.progress_bar.show()
@@ -78,10 +79,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.progress_bar.hide()
 
     def change_status_message(self, message):
+        print('Signal received - changing the status bar message to {}'.format(message))
         self.statusBar().showMessage(message)
 
     def reset_status_message(self):
-        self.statusBar().showMessage('Ready')
+        if len(self.loader.database.db):
+            added_message = "Databases: {}    Activities: {}".format(", ".join(self.loader.database.database_names),
+                                                                     len(self.loader.database.db))
+        else:
+            added_message = ''
+        self.statusBar().showMessage('Ready    {}'.format(added_message))
 
     def connect_signals(self):
         signals.start_status_progress.connect(self.start_status_progress)

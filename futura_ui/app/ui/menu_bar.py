@@ -22,26 +22,26 @@ class MenuBar(object):
             signals.new_recipe.emit
         )
 
-        menu.addSeparator()
-
-        menu.addAction(
-            qicons.futura,
-            '&Save...',
-            signals.save_loader.emit
-        )
-        menu.addAction(
-            qicons.futura,
-            '&Load...',
-            signals.load_loader.emit
-        )
-
-        menu.addSeparator()
-
         menu.addAction(
             qicons.futura,
             '&Load Recipe...',
             signals.load_recipe.emit
         )
+
+        menu.addSeparator()
+
+        menu.addAction(
+            qicons.futura,
+            '&Save workspace...',
+            signals.save_loader.emit
+        )
+        menu.addAction(
+            qicons.futura,
+            '&Open workspace...',
+            signals.load_loader.emit
+        )
+
+
 
         return menu
 

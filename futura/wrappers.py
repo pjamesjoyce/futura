@@ -9,6 +9,7 @@ import brightway2 as bw2
 from .utils import *
 from .storage import storage
 from .constants import DEFAULT_SETUP_PROJECT
+from .ecoinvent import check_database
 import os
 from copy import deepcopy
 from bw2io.strategies.generic import link_iterable_by_fields
@@ -152,6 +153,20 @@ class FuturaDatabase:
         version = str(kwargs.get('version'))
         system_model = kwargs.get('system_model')
         write_config = False
+
+        if version and system_model:
+            print("Attempting to find stored version of ecoinvent {} {})".format(version,
+                                                                                 system_model))
+
+            check_database_name = "ecoinvent_{}{}".format(system_model,
+                                                          str(version).replace('.', ''))
+
+            check = check_database(DEFAULT_SETUP_PROJECT, check_database_name)
+
+            if check:
+                print("Found an existing version - extracting that")
+                self.extract_bw2_database(DEFAULT_SETUP_PROJECT, check_database_name)
+                return
 
         if not username or not password:
             config = storage.config

@@ -1,13 +1,15 @@
 from futura.loader import FuturaLoader
 from futura.wrappers import FuturaDatabase
 from futura.recipe import FuturaRecipeExecutor
+from futura.storage import storage
 
 from .signals import signals
-from .ui.dialogs.progress import DefinedProgress
+from .ui.dialogs import EcoinventLoginDialog
 from .utils import findMainWindow
-from PySide2.QtWidgets import QProgressDialog, QFileDialog
+from PySide2.QtWidgets import QProgressDialog, QFileDialog, QApplication
 from PySide2.QtCore import Qt
 from .threads import FunctionThread, GeneratorThread
+
 
 class FuturaGuiLoader(FuturaLoader):
 
@@ -25,7 +27,7 @@ class FuturaGuiLoader(FuturaLoader):
         #
         # self.thread = GeneratorThread(self.run_generator)
 
-        #self.progress = QProgressDialog('Load', 'cancel', 0, 50, findMainWindow().centralWidget())
+        # self.progress = QProgressDialog('Load', 'cancel', 0, 50, findMainWindow().centralWidget())
 
     def run(self):
 
@@ -34,14 +36,16 @@ class FuturaGuiLoader(FuturaLoader):
 
         executor = FuturaRecipeExecutor(self)
 
-        def run():
+        def run_thread():
+            QApplication.processEvents()
             for i in executor.recipe_generator():
                 print (i['message'])
                 yield i
             signals.update_recipe.emit()
             signals.show_recipe_actions.emit()
+            signals.reset_status_message.emit()
 
-        self.thread = GeneratorThread(run, steps)
+        self.thread = GeneratorThread(run_thread, steps)
 
         print('starting thread')
 
@@ -80,6 +84,7 @@ class FuturaGuiLoader(FuturaLoader):
 
             signals.update_recipe.emit()
             signals.show_recipe_actions.emit()
+            signals.reset_status_message.emit()
 
     # TODO: Delete this!
     def load_base(self):
@@ -88,7 +93,7 @@ class FuturaGuiLoader(FuturaLoader):
 
         signals.update_recipe.emit()
         signals.show_recipe_actions.emit()
-
+        signals.reset_status_message.emit()
 
 
     def print_progress(self, progress):
@@ -99,3 +104,4 @@ class FuturaGuiLoader(FuturaLoader):
         signals.save_loader.connect(self.save_dialog)
         signals.load_loader.connect(self.load_dialog)
         signals.load_base.connect(self.load_base) # TODO: Delete this
+
