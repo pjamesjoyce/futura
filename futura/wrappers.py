@@ -5,7 +5,10 @@ from wurst.brightway.extract_database import add_input_info_for_indigenous_excha
 
 from . import w
 from . import warn
-import brightway2 as bw2
+#import brightway2 as bw2
+
+from bw2data import projects, databases
+from bw2io import ExcelImporter, SingleOutputEcospold2Importer, bw2setup
 
 from .utils import *
 from .storage import storage
@@ -66,12 +69,12 @@ class FuturaDatabase:
 
         if isinstance(database_name, str):
             database_names = [database_name]
-        assert project_name in bw2.projects, "That project doesn't exist"
+        assert project_name in projects, "That project doesn't exist"
         assert isinstance(self.database_names, (list, tuple, set)), "Must pass list of database names"
 
         self.database_names.extend(database_names)
 
-        bw2.projects.set_current(project_name)
+        projects.set_current(project_name)
 
         input_db = w.extract_brightway2_databases(database_names)
 
@@ -85,7 +88,7 @@ class FuturaDatabase:
 
         print(excelfilepath)
 
-        sp = bw2.ExcelImporter(excelfilepath)
+        sp = ExcelImporter(excelfilepath)
 
         # link the biosphere exchanges
         sp.apply_strategies(verbose=False)
@@ -215,21 +218,21 @@ class FuturaDatabase:
             if not db_name:
                 db_name = "ecoinvent_{}".format(downloader.file_name.replace('.7z', ''))
             datasets_path = os.path.join(td, 'datasets')
-            importer = bw2.SingleOutputEcospold2Importer(datasets_path, db_name)
+            importer = SingleOutputEcospold2Importer(datasets_path, db_name)
 
-        current_project = bw2.projects.current
+        current_project = projects.current
 
-        bw2.projects.set_current(DEFAULT_SETUP_PROJECT)
+        projects.set_current(DEFAULT_SETUP_PROJECT)
 
-        if 'biosphere3' not in bw2.databases:
-            bw2.bw2setup()
+        if 'biosphere3' not in databases:
+            bw2setup()
 
         importer.apply_strategies()
         datasets, exchanges, unlinked = importer.statistics()
         if not unlinked:
             importer.write_database()
 
-        bw2.projects.set_current(current_project)
+        projects.set_current(current_project)
 
         for ds in importer.data:
             if 'parameters' in ds.keys():
@@ -245,21 +248,21 @@ class FuturaDatabase:
 
     def write_database(self, project, name, overwrite=False):
 
-        if project not in bw2.projects:
+        if project not in projects:
             warn("The project '{}' doesn't exist, it will be created".format(project))
 
-        if bw2.projects.current != project:
-            bw2.projects.set_current(project)
+        if projects.current != project:
+            projects.set_current(project)
 
-        if 'biosphere3' not in bw2.databases:
-            bw2.bw2setup()
+        if 'biosphere3' not in databases:
+            bw2setup()
 
-        if name in bw2.databases:
+        if name in databases:
             if not overwrite:
                 assert 0, 'Database already exists, either use overwrite=True, or use another name'
             else:
                 print('Deleting existing database {}'.format(name))
-                del bw2.databases[name]
+                del databases[name]
 
         w.write_brightway2_database(self.db, name)
 

@@ -1,22 +1,19 @@
 # -*- coding: utf-8 -*-
 
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets
 import os
 
-from .settings import futura_settings  # , project_settings
 from .signals import signals
-from .ui.dialogs.progress import UndefinedProgress
 
 from .wrappers import FuturaGuiLoader
 
 from .utils import findMainWindow
 from .ui.dialogs import BaseDatabaseDialog, NewRecipeDialog, EcoinventLoginDialog, BrightwayDialog
-from .ui.widgets.filter import FilterListerWidget, parse_filter_widget, FilterListerDialog
+from .ui.widgets.filter import parse_filter_widget, FilterListerDialog
 from .ui.wizards import RegionalisationWizard, MarketsWizard
 
 from futura.utils import create_filter_from_description
 from futura import w
-from futura.regionalisation import create_regional_activities
 from futura.constants import ASSET_PATH
 from futura.technology import add_technology_to_database, fix_ch_only_processes
 from futura.recipe import FuturaRecipeExecutor
@@ -27,7 +24,7 @@ import yaml
 from copy import deepcopy
 import shutil
 
-from .threads import FunctionThread, GeneratorThread
+from .threads import GeneratorThread
 
 from bw2data import projects
 

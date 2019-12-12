@@ -1,7 +1,6 @@
 from PySide2 import QtWidgets
 from futura_ui.app.ui.utils import load_ui_file
 from futura_ui.app.ui.tables.projects import ProjectListWidget
-from futura_ui.app.signals import signals
 import os
 
 
