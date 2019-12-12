@@ -255,7 +255,10 @@ class Controller(object):
             signals.start_status_progress.emit(0)
             signals.change_status_message.emit('Exporting recipe...')
 
-            recipe = findMainWindow().loader.recipe
+            QtWidgets.QApplication.processEvents()
+
+            loader = findMainWindow().loader
+            recipe = loader.recipe
 
             cp = deepcopy(recipe)
 
@@ -274,6 +277,15 @@ class Controller(object):
                         technology_path = task.get('kwargs').get('technology_file')
                         if technology_path:
                             split_path, split_name = os.path.split(technology_path)
+                            if split_path == '':
+                                if loader.recipe_filepath:
+                                    print('assuming recipe_path')
+                                    split_path, _ = os.path.split(loader.recipe_filepath)
+                                elif loader.load_path:
+                                    print('assuming loader_path')
+                                    split_path, _ = os.path.split(loader.load_path)
+                                else:
+                                    print('no path to move the file')
                             move_files.append((split_path, split_name))
                             task['kwargs']['technology_file'] = split_name
 
@@ -284,9 +296,11 @@ class Controller(object):
             if move_files:
                 base_folder, _ = os.path.split(filename)
                 for f in move_files:
-                    shutil.copy(os.path.join(f[0], f[1]), os.path.join(base_folder, f[1]))
-                    message_text += "{} moved to export folder\n".format(f[1])
-
+                    try:
+                        shutil.copy(os.path.join(f[0], f[1]), os.path.join(base_folder, f[1]))
+                        message_text += "{} moved to export folder\n".format(f[1])
+                    except FileNotFoundError:
+                        pass
             signals.hide_status_progress.emit()
             signals.reset_status_message.emit()
             message = QtWidgets.QMessageBox()

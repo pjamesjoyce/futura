@@ -34,16 +34,20 @@ class FuturaLoader:
 
         self.executor = None
 
-        if recipe_filepath:
-            self.recipe = self.load_recipe(recipe_filepath)
+        self.recipe_filepath = recipe_filepath
+        self.load_path = None
+
+        if self.recipe_filepath:
+            self.recipe = self.load_recipe(self.recipe_filepath)
         else:
             autocreate = None
 
         if autocreate:
             self.run()
 
-    @staticmethod
-    def load_recipe(filename):
+    def load_recipe(self, filename):
+
+        self.recipe_filepath = filename
 
         with open(filename, "r") as f:
             template = jinja2.Template(f.read())
@@ -86,6 +90,8 @@ class FuturaLoader:
         print('Saved to {}'.format(save_path))
 
     def load(self, load_path):
+
+        self.load_path = load_path
 
         with open(load_path, 'rb') as f:
             assert load_path[-3:] == '.fl', "Not a valid file path"

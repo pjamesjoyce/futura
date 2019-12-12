@@ -6,6 +6,7 @@ from wurst.brightway.extract_database import add_input_info_for_indigenous_excha
 from . import w
 from . import warn
 import brightway2 as bw2
+
 from .utils import *
 from .storage import storage
 from .constants import DEFAULT_SETUP_PROJECT
@@ -81,6 +82,9 @@ class FuturaDatabase:
         print(self.db)
 
     def extract_excel_data(self, excelfilepath):
+
+        print(excelfilepath)
+
         sp = bw2.ExcelImporter(excelfilepath)
 
         # link the biosphere exchanges

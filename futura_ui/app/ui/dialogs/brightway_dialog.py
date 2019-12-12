@@ -24,6 +24,7 @@ class BrightwayDialog(QtWidgets.QDialog):
             self.projectChoiceLayout.addWidget(input_widget)
 
         self.connect_widgets()
+        self.check_project_type()
 
     def connect_widgets(self):
         self.existingRadioButton.toggled.connect(self.check_project_type)

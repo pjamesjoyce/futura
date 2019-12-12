@@ -11,8 +11,8 @@ from .ui.style import default_font
 def run_futura():
     qapp = QtWidgets.QApplication(sys.argv)
     # qapp.setFont(default_font)
-    application = Application()
-    application.show()
+    app = Application()
+    app.show()
 
     print("Qt Version:", QtCore.__version__)
 

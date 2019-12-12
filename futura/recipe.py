@@ -148,6 +148,22 @@ class FuturaRecipeExecutor:
                 else:
                     technology_path = technology_file
 
+                if not os.path.exists(technology_path):
+                    # try the recipe path
+                    _, split_name = os.path.split(technology_path)
+
+                    if self.loader.recipe_filepath:
+                        print('assuming recipe_path')
+                        split_path, _ = os.path.split(self.loader.recipe_filepath)
+                    elif self.loader.load_path:
+                        print('assuming loader_path')
+                        split_path, _ = os.path.split(self.loader.load_path)
+                    else:
+                        split_path = ''
+                        print('no alternative path found for file')
+
+                    technology_path = os.path.join(split_path, split_name)
+
                 extra_kwargs['technology_file'] = technology_path
 
             if task['function'] == 'extract_bw2_database':

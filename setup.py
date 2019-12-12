@@ -51,6 +51,10 @@ setup(
     package_data={'futura': my_package_files},
     entry_points={
         'console_scripts': [
+            'futura = futura_ui.bin.run_futura:main'
+        ],
+        'gui_scripts': [
+            'futura_ui = futura_ui.bin.run_futura_ui:main'
         ]
     },
     # install_requires=[
