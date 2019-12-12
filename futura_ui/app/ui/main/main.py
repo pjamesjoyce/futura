@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 from PySide2 import QtCore, QtWidgets, QtGui
 
-from .utils import load_ui_file
-from .icons import qicons
-from .panels import LeftPanel, RightPanel
-from . menu_bar import MenuBar
-from ..signals import signals
+from futura_ui.app.ui.utils import load_ui_file
+from futura_ui.app.ui.icons import qicons
+from futura_ui.app.ui.panels import LeftPanel, RightPanel
+from futura_ui.app.ui.menu_bar import MenuBar
+from futura_ui.app.signals import signals
 
 import time
 import os
 from futura.loader import FuturaLoader
 
-from .dialogs.progress import UndefinedProgress
-from ..wrappers import FuturaGuiLoader
+from futura_ui.app.ui.dialogs.progress import UndefinedProgress
+from futura_ui.app.wrappers import FuturaGuiLoader
 
 APP_NAME = "Futura"
 APP_VERSION = "0.0.1"
@@ -23,7 +23,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__(None)
 
-        ui_path = os.path.join('main', 'new_main_empty.ui')
+        ui_path = os.path.join('main_window', 'main.ui')
         ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
 
         load_ui_file(ui_path, self)

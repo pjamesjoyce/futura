@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from .controller import Controller
-from .ui.main import MainWindow
+from futura_ui.app.ui.main.main import MainWindow
 
 
 class Application(object):
