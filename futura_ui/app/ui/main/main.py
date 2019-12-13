@@ -23,9 +23,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__(None)
 
-        ui_path = os.path.join('main_window', 'main.ui')
+        #ui_path = os.path.join('main_window', 'main.ui')
+        ui_path = 'main.ui'
         ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
-
         load_ui_file(ui_path, self)
 
         self.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
