@@ -27,6 +27,10 @@ class FuturaSaver:
 
 class FuturaLoader:
 
+    """
+    Docstring: This is a FuturaLoader - I need to write a docstring
+    """
+
     def __init__(self, recipe_filepath=None, autocreate=True):
 
         self.recipe = {}
@@ -46,6 +50,10 @@ class FuturaLoader:
             self.run()
 
     def load_recipe(self, filename):
+
+        """
+        Docstring: This is load_recipe - I need to write a docstring
+        """
 
         self.recipe_filepath = filename
 
