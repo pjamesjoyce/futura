@@ -1,22 +1,20 @@
 from PySide2 import QtWidgets, QtCore
-import os
-from ..utils import load_ui_file
+
 from ..widgets.filter import FilterListerWidget, parse_filter_widget
 from ..widgets.geo import LocationSelectorWidget
 from ...utils import findMainWindow
+from ..ui_files import Ui_RegionalisationWizard
 
 from futura.utils import create_filter_from_description
 from futura import w
 from futura.proxy import WurstProcess
 
-class RegionalisationWizard(QtWidgets.QWizard):
+class RegionalisationWizard(Ui_RegionalisationWizard, QtWidgets.QWizard):
     def __init__(self, parent=None):
         super(RegionalisationWizard, self).__init__(parent)
 
-        ui_path = 'regionalisation_wizard.ui'
-        ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
+        self.setupUi(self)
 
-        load_ui_file(ui_path, self)
         self.filter_widget = FilterListerWidget()
         self.filterLayout.addWidget(self.filter_widget)
 

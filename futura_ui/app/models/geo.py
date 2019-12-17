@@ -7,6 +7,8 @@ from PySide2.QtCore import Qt
 import json
 import os
 
+from .global_tree import global_tree
+
 g = cg.Geomatcher()
 from pprint import pprint
 
@@ -162,8 +164,8 @@ other = [
 json_path = 'global_tree.json'
 json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), json_path)
 
-with open(json_path, 'r') as f:
-    global_tree = json.load(f)
+#with open(json_path, 'r') as f:
+#    global_tree = json.load(f)
 
 
 #raw_tree = location_tree('GLO')

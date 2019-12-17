@@ -7,6 +7,8 @@ from futura_ui.app.ui.panels import LeftPanel, RightPanel
 from futura_ui.app.ui.menu_bar import MenuBar
 from futura_ui.app.signals import signals
 
+from ..ui_files import Ui_MainWindow
+
 import time
 import os
 from futura.loader import FuturaLoader
@@ -18,15 +20,17 @@ APP_NAME = "Futura"
 APP_VERSION = "0.0.1"
 
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(Ui_MainWindow, QtWidgets.QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__(None)
 
         #ui_path = os.path.join('main_window', 'main.ui')
-        ui_path = 'main.ui'
-        ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
-        load_ui_file(ui_path, self)
+        #ui_path = 'main.ui'
+        #ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
+        #load_ui_file(ui_path, self)
+
+        self.setupUi(self)
 
         self.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
 

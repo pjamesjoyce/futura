@@ -1,34 +1,15 @@
 from PySide2 import QtWidgets
-try:
-    from ..utils import load_ui_file
-except ImportError:
-    from futura_ui.app.ui.utils import load_ui_file
-
-try:
-    from ..icons import qicons
-except ImportError:
-    from futura_ui.app.ui.icons import qicons
-
-try:
-    from ...signals import signals
-except ImportError:
-    from futura_ui.app.signals import signals
-
-try:
-    from ...utils import findMainWindow
-except ImportError:
-    from futura_ui.app.utils import findMainWindow
-
+from ..icons import qicons
+from ...utils import findMainWindow
 from ..widgets import LocationInputWidget
 
-from PySide2.QtCore import Signal
+from ..ui_files import Ui_FilterWidget, Ui_SubFilterWidget, Ui_FilterListerWidget, Ui_FilterListerDialog
 
 from futura.utils import create_filter_from_description
 
 from futura import w
 
 import os
-#from functools import partial
 
 
 def parse_filter_widget(widget):
@@ -115,14 +96,11 @@ def parse_filter_widget(widget):
     return filter_description
 
 
-class FilterWidget(QtWidgets.QWidget):
+class FilterWidget(Ui_FilterWidget, QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(FilterWidget, self).__init__(parent)
 
-        ui_path = 'filter_widget.ui'
-        ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
-
-        load_ui_file(ui_path, self)
+        self.setupUi(self)
 
         self.subfilters = []
 
@@ -178,13 +156,11 @@ class FilterWidget(QtWidgets.QWidget):
             self.subfilters = []
 
 
-class SubFilterWidget(QtWidgets.QWidget):
+class SubFilterWidget(Ui_SubFilterWidget, QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(SubFilterWidget, self).__init__(parent)
 
-        ui_path = 'sub_filter_widget.ui'
-        ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
-        load_ui_file(ui_path, self)
+        self.setupUi(self)
 
         self.search_term = QtWidgets.QLineEdit()
         self.database_choice = QtWidgets.QComboBox()
@@ -233,14 +209,11 @@ class SubFilterWidget(QtWidgets.QWidget):
         self.parent().add_subfilter()
 
 
-class FilterListerWidget(QtWidgets.QWidget):
+class FilterListerWidget(Ui_FilterListerWidget, QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(FilterListerWidget, self).__init__(parent)
 
-        ui_path = 'filter_lister_widget.ui'
-        ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
-
-        load_ui_file(ui_path, self)
+        self.setupUi(self)
 
         self.addButton.setIcon(qicons.add)
         self.addButton.pressed.connect(self.add_filter_step)
@@ -285,28 +258,12 @@ class FilterListerWidget(QtWidgets.QWidget):
         self.test_result.setText(message)
 
 
-class FilterListerDialog(QtWidgets.QDialog):
+class FilterListerDialog(Ui_FilterListerDialog, QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(FilterListerDialog, self).__init__(parent)
 
-        ui_path = 'blank_dialog.ui'
-        ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
+        self.setupUi(self)
 
-        load_ui_file(ui_path, self)
         self.filter_widget = FilterListerWidget()
         self.baseLayout.addWidget(self.filter_widget)
 
-
-if __name__ == '__main__':
-
-    import sys
-
-
-    app = QtWidgets.QApplication(sys.argv)
-
-    view = FilterListerDialog()
-
-    view.setWindowTitle("TEST")
-    view.show()
-
-    sys.exit(app.exec_())

@@ -243,7 +243,7 @@ class Controller(object):
     def export_recipe(self):
 
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(None,
-                                                            'Choose a recipe file...',
+                                                            'Save as recipe file...',
                                                             # os.path.join(os.path.expanduser('~'), 'Documents'),
                                                             r'C:\Users\pjjoyce\Dropbox\00_My_Software',
                                                             "Recipe Files (*.yml *.yaml)")

@@ -2,10 +2,7 @@ from PySide2 import QtWidgets, QtCore
 
 from ..icons import qicons
 
-try:
-    from ...models.geo import LocationModel, global_tree
-except ImportError:
-    from futura_ui.app.models.geo import LocationModel, global_tree
+from ...models.geo import LocationModel, global_tree
 
 
 class LocationSelectorWidget(QtWidgets.QWidget):
@@ -142,17 +139,3 @@ class LocationInputWidget(QtWidgets.QLineEdit):
             self.setText(", ".join([x['code'] for x in self.checked_items]))
 
 
-
-if __name__ == '__main__':
-
-    import sys
-
-
-    app = QtWidgets.QApplication(sys.argv)
-
-    view = LocationSelectorWidget()
-
-    view.setWindowTitle("TEST")
-    view.show()
-
-    sys.exit(app.exec_())

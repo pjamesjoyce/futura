@@ -1,16 +1,12 @@
 from PySide2 import QtWidgets, QtGui
-from ..utils import load_ui_file
-import os
+from ..ui_files import Ui_TransferProductionDialog
 
 
-class TransferProductionDialog(QtWidgets.QDialog):
+class TransferProductionDialog(Ui_TransferProductionDialog, QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(TransferProductionDialog, self).__init__(parent)
 
-        ui_path = 'transfer_production.ui'
-        ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
-
-        load_ui_file(ui_path, self)
+        self.setupUi(self)
 
         validator = QtGui.QDoubleValidator()
         validator.setDecimals(0)

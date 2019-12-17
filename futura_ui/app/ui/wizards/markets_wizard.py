@@ -1,6 +1,5 @@
 from PySide2 import QtWidgets, QtCore, QtGui
-import os
-from ..utils import load_ui_file
+
 from ..widgets.filter import FilterListerWidget, parse_filter_widget
 from ..widgets.geo import LocationSelectorWidget
 from ...utils import findMainWindow
@@ -9,6 +8,8 @@ from ...models import PandasModel, FuturaRecipePrettifier
 
 from ..dialogs import EditProductionDialog, TransferProductionDialog
 
+from ..ui_files import Ui_MarketsWizard
+
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -16,20 +17,16 @@ import matplotlib.pyplot as plt
 
 import pandas as pd
 
-
 from futura.utils import create_filter_from_description
 from futura.markets import FuturaMarket, find_possible_additional_market_exchanges
 from futura import w
 
 
-class MarketsWizard(QtWidgets.QWizard):
+class MarketsWizard(Ui_MarketsWizard, QtWidgets.QWizard):
     def __init__(self, parent=None):
         super(MarketsWizard, self).__init__(parent)
 
-        ui_path = 'markets_wizard.ui'
-        ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ui_path)
-
-        load_ui_file(ui_path, self)
+        self.setupUi(self)
 
         self.filter_widget = FilterListerWidget()
         self.filterLayout.addWidget(self.filter_widget)

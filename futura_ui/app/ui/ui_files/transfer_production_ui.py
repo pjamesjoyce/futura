@@ -1,0 +1,97 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'C:\Users\pjjoyce\Dropbox\00_My_Software\futura\futura_ui\app\ui\ui_files\transfer_production.ui',
+# licensing of 'C:\Users\pjjoyce\Dropbox\00_My_Software\futura\futura_ui\app\ui\ui_files\transfer_production.ui' applies.
+#
+# Created: Fri Dec 13 12:59:03 2019
+#      by: pyside2-uic  running on PySide2 5.13.1
+#
+# WARNING! All changes made in this file will be lost!
+
+from PySide2 import QtCore, QtGui, QtWidgets
+
+class Ui_TransferProductionDialog(object):
+    def setupUi(self, TransferProductionDialog):
+        TransferProductionDialog.setObjectName("TransferProductionDialog")
+        TransferProductionDialog.resize(376, 230)
+        self.gridLayout = QtWidgets.QGridLayout(TransferProductionDialog)
+        self.gridLayout.setObjectName("gridLayout")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.label = QtWidgets.QLabel(TransferProductionDialog)
+        self.label.setMinimumSize(QtCore.QSize(300, 0))
+        self.label.setMaximumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setWeight(75)
+        font.setBold(True)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.verticalLayout.addWidget(self.label)
+        self.formLayout = QtWidgets.QFormLayout()
+        self.formLayout.setObjectName("formLayout")
+        self.label_5 = QtWidgets.QLabel(TransferProductionDialog)
+        self.label_5.setObjectName("label_5")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_5)
+        self.fromLabel = QtWidgets.QLabel(TransferProductionDialog)
+        self.fromLabel.setObjectName("fromLabel")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.fromLabel)
+        self.label_2 = QtWidgets.QLabel(TransferProductionDialog)
+        self.label_2.setObjectName("label_2")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_2)
+        self.currentValueLabel = QtWidgets.QLabel(TransferProductionDialog)
+        self.currentValueLabel.setObjectName("currentValueLabel")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.currentValueLabel)
+        self.label_4 = QtWidgets.QLabel(TransferProductionDialog)
+        self.label_4.setObjectName("label_4")
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_4)
+        self.toComboBox = QtWidgets.QComboBox(TransferProductionDialog)
+        self.toComboBox.setObjectName("toComboBox")
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.toComboBox)
+        self.label_7 = QtWidgets.QLabel(TransferProductionDialog)
+        self.label_7.setObjectName("label_7")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_7)
+        self.frame = QtWidgets.QFrame(TransferProductionDialog)
+        self.frame.setMinimumSize(QtCore.QSize(0, 20))
+        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.percentageRadioButton = QtWidgets.QRadioButton(self.frame)
+        self.percentageRadioButton.setGeometry(QtCore.QRect(20, 0, 95, 20))
+        self.percentageRadioButton.setChecked(True)
+        self.percentageRadioButton.setObjectName("percentageRadioButton")
+        self.amountRadioButton = QtWidgets.QRadioButton(self.frame)
+        self.amountRadioButton.setGeometry(QtCore.QRect(130, 0, 95, 20))
+        self.amountRadioButton.setObjectName("amountRadioButton")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.frame)
+        self.transferLabel = QtWidgets.QLabel(TransferProductionDialog)
+        self.transferLabel.setObjectName("transferLabel")
+        self.formLayout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.transferLabel)
+        self.newValueLineEdit = QtWidgets.QLineEdit(TransferProductionDialog)
+        self.newValueLineEdit.setObjectName("newValueLineEdit")
+        self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.newValueLineEdit)
+        self.verticalLayout.addLayout(self.formLayout)
+        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
+        self.buttonBox = QtWidgets.QDialogButtonBox(TransferProductionDialog)
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName("buttonBox")
+        self.gridLayout.addWidget(self.buttonBox, 1, 0, 1, 1)
+
+        self.retranslateUi(TransferProductionDialog)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), TransferProductionDialog.accept)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), TransferProductionDialog.reject)
+        QtCore.QMetaObject.connectSlotsByName(TransferProductionDialog)
+
+    def retranslateUi(self, TransferProductionDialog):
+        TransferProductionDialog.setWindowTitle(QtWidgets.QApplication.translate("TransferProductionDialog", "Transfer production volume", None, -1))
+        self.label.setText(QtWidgets.QApplication.translate("TransferProductionDialog", "Transfer Production Volume", None, -1))
+        self.label_5.setText(QtWidgets.QApplication.translate("TransferProductionDialog", "From:", None, -1))
+        self.fromLabel.setText(QtWidgets.QApplication.translate("TransferProductionDialog", "Not Specified", None, -1))
+        self.label_2.setText(QtWidgets.QApplication.translate("TransferProductionDialog", "Current value:  ", None, -1))
+        self.currentValueLabel.setText(QtWidgets.QApplication.translate("TransferProductionDialog", "0", None, -1))
+        self.label_4.setText(QtWidgets.QApplication.translate("TransferProductionDialog", "To:", None, -1))
+        self.label_7.setText(QtWidgets.QApplication.translate("TransferProductionDialog", "Type:", None, -1))
+        self.percentageRadioButton.setText(QtWidgets.QApplication.translate("TransferProductionDialog", "Percentage", None, -1))
+        self.amountRadioButton.setText(QtWidgets.QApplication.translate("TransferProductionDialog", "Amount", None, -1))
+        self.transferLabel.setText(QtWidgets.QApplication.translate("TransferProductionDialog", "Percentage:  ", None, -1))
+
