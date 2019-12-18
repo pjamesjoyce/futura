@@ -18,6 +18,9 @@ import zlib
 
 
 class FuturaSaver:
+    """
+    TODO: Write doctring
+    """
 
     def __init__(self, loader):
 
@@ -28,7 +31,30 @@ class FuturaSaver:
 class FuturaLoader:
 
     """
-    Docstring: This is a FuturaLoader - I need to write a docstring
+    The FuturaLoader class sits at the centre of Futura and (via the FuturaDatabase, FuturaSaver and FuturaExecutor
+    classes) allows you to load, run and save recipes for creating new databases. It also stores the current database
+    and can be saved to disk itself and reloaded for quickly picking up where you left off.
+
+    :param recipe_filepath: Optionally pass a filepath to open an existing recipe. If left blank a blank recipe is
+        created
+    :type recipe_filepath: str, optional
+    :param autocreate: Automatically run the recipe when it is loaded. Default is `True`
+    :type autocreate: bool, optional
+
+    :ivar recipe: Dictionary representation of the current recipe. Can be set by :func:`load_recipe`
+    :vartype recipe: dict
+
+    :ivar database: A :class:`~futura.wrappers.FuturaDatabase` representing the current working database
+    :vartype database: :class:`~futura.wrappers.FuturaDatabase`
+
+    :ivar executor: A :class:`~futura.wrappers.FuturaRecipeExecutor` object which is invoked to run the current recipe
+    :vartype executor: :class:`~futura.recipe.FuturaRecipeExecutor`
+
+    :ivar recipe_filepath: Path of the loaded recipe. Set if/when a recipe is loaded
+    :vartype recipe_filepath: str
+
+    :ivar load_path: Path of the loaded .fl file. Set if/when an .fl file is loaded
+    :vartype load_path: str
     """
 
     def __init__(self, recipe_filepath=None, autocreate=True):
@@ -53,6 +79,9 @@ class FuturaLoader:
 
         """
         Docstring: This is load_recipe - I need to write a docstring
+
+        :return: Parsed recipe as a dict
+        :rtype: dict
         """
 
         self.recipe_filepath = filename

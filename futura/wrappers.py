@@ -35,32 +35,15 @@ class FuturaDatabase:
 
     """
     TODO: Write doctring
+
+    :ivar db: database
+    :vartype db: :class:`~futura.proxy.WurstDatabase`
     """
 
-    def __init__(self):  # , project_name=None, database_names=None, save_db_file=True):
+    def __init__(self):
 
         self.db = WurstDatabase()
         self.database_names = []
-
-        """
-        if not database_names:
-            database_names = []
-
-        if isinstance(database_names, str):
-            database_names = [database_names]
-
-        self.database_names = database_names
-
-        if database_names:
-            self.extract_databases(project_name, database_names)
-
-            if save_db_file:
-                # TODO: Get rid of this try except statement
-                try:
-                    self.save()
-                except:
-                    print('something went wrong')
-        """
 
     def __repr__(self):
         return "FuturaDatabase with {} items".format(len(self.db))
@@ -145,15 +128,35 @@ class FuturaDatabase:
     def get_ecoinvent(self, db_name=None, download_path=None, store_download=True, **kwargs):
 
         """
-        Download and import ecoinvent to FuturaDatabase
+        Download and import ecoinvent to FuturaDatabase. Sets :attr:`~db` directly
+
         Optional kwargs:
-            db_name: name to give imported database (string) default is downloaded filename
-            download_path: path to download .7z file to (string) default is download to temporary directory (.7z file is deleted after import)
-            store_download: store the .7z file for later reuse, default is True, only takes effect if no download_path is provided
-            username: ecoinvent username (string)
-            password: ecoivnent password (string)
-            version: ecoinvent version (string), eg '3.5'
-            system_model: ecoinvent system model (string), one of {'cutoff', 'apos', 'consequential'}
+
+        :param db_name: name to give imported database. Default is downloaded filename
+        :type db_name: str, optional
+
+        :param download_path: path to download .7z file to default is download to temporary directory
+            (.7z file is deleted after import)
+        :type download_path: str, optional
+
+        :param store_download: store the .7z file for later reuse, default is True, only takes effect if
+            no download_path is provided
+        :type store_download: bool, optional
+
+        :param username: ecoinvent username
+        :type username: str, optional
+
+        :param password: ecoinvent password
+        :type password: str, optional
+
+        :param version: ecoinvent version, eg '3.5'
+        :type version: str, optional
+
+        :param system_model: ecoinvent system model, one of {'cutoff', 'apos', 'consequential'}
+        :type system_model: str, optional
+
+        :return: None
+        :rtype: None
         """
         username = kwargs.get('username')
         password = kwargs.get('password')
