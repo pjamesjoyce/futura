@@ -36,6 +36,8 @@ extensions = [
     # "sphinx.ext.napoleon"
 ]
 
+master_doc = 'index'
+
 # Napoleon settings
 # napoleon_google_docstring = True
 
