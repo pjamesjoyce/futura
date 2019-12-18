@@ -77,7 +77,7 @@ class QIcons(Icons):
     """ Using the Icons class, returns the same attributes, but as QIcon type
     """
     def __getattribute__(self, item):
-        return QIcon(Icons.__getattribute__(self, item))
+        return QIcon(str(Icons.__getattribute__(self, item)))
 
 
 icons = Icons()

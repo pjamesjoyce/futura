@@ -9,6 +9,9 @@ import os
 
 
 class FuturaRecipeExecutor:
+    """
+    TODO: Write doctring
+    """
 
     def __init__(self, loader):
 
