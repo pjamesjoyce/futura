@@ -45,8 +45,8 @@ The easiest way to use Futura is via its user interface. Once you have installed
 interface by activating your futura environment and typing `futura_ui` like this:
 
 ```bash
-> activate futura
-(futura) > futura_ui
+$ activate futura
+(futura) $ futura_ui
 ```
 
 This will launch the user interface (written with Pyside2) which looks a bit like this:
