@@ -1,9 +1,9 @@
 # Futura
 
 
-[![Build Status](https://travis-ci.com/pjamesjoyce/futura.svg?branch=master)](https://travis-ci.com/pjamesjoyce/futura)
+[![](https://travis-ci.com/pjamesjoyce/futura.svg?branch=master)](https://travis-ci.com/pjamesjoyce/futura)
 
-[![Coverage Status](https://coveralls.io/repos/github/pjamesjoyce/futura/badge.svg?branch=master)](https://coveralls.io/github/pjamesjoyce/futura?branch=master)
+[![](https://coveralls.io/repos/github/pjamesjoyce/futura/badge.svg?branch=master)](https://coveralls.io/github/pjamesjoyce/futura?branch=master)
 
 
 Futura is a software interface to generate arbitrary future background databases for LCA sensitivity analyses.
@@ -52,4 +52,4 @@ $ activate futura
 
 This will launch the user interface (written with Pyside2) which looks a bit like this:
 
-![Futura UI](_static/futura_ui.jpg)
+![](_static/futura_ui.jpg)
