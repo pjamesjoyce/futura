@@ -27,7 +27,10 @@ except ImportError:
 import zlib
 
 from .proxy import WurstDatabase
-from eidl import EcoinventDownloader
+try:
+    from eidl import EcoinventDownloader
+except ImportError:
+    warn('eidl not found')
 import getpass
 
 
