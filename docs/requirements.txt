@@ -1,1 +1,3 @@
-# requirements go here
+wurst
+brightway2
+pyyaml
