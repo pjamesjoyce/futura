@@ -1,17 +1,6 @@
-# Futura
+# Installation
 
-
-[![](https://travis-ci.com/pjamesjoyce/futura.svg?branch=master)](https://travis-ci.com/pjamesjoyce/futura)
-
-[![](https://coveralls.io/repos/github/pjamesjoyce/futura/badge.svg?branch=master)](https://coveralls.io/github/pjamesjoyce/futura?branch=master)
-
-
-Futura is a software interface to generate arbitrary future background databases for LCA sensitivity analyses.
-
-
-## Installation
-
-### Basic Installation
+## Basic Installation
 
 The easiest way to install Futura is via conda. This ensures the version of Python (3.6+) is correct,
 all of the dependencies are correct and there are no conflicts.
