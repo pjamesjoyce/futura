@@ -11,6 +11,7 @@ Welcome to Futura's documentation!
    :caption: Contents:
 
    introduction
+   readme
 
 Technical Reference
 ===================
