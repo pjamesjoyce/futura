@@ -13,13 +13,14 @@ Welcome to Futura's documentation!
    introduction
    readme
 
+
 Technical Reference
 ===================
 
 .. toctree::
    :maxdepth: 2
 
-   technical/futura_technical
+   modules
 
 Indices and tables
 ==================
