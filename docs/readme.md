@@ -8,8 +8,6 @@
 
 Futura is a software interface to generate arbitrary future background databases for LCA sensitivity analyses.
 
-Online documentation, including full installation instructions, is available [here](http://futura.readthedocs.io)
-
 
 ## Installation
 
