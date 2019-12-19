@@ -12,84 +12,87 @@ metadata:
         This Futura recipe loads the ecoinvent 3.3 database, adds Carma CCS projects,
         then alters the British and German high voltage electricity markets to shift
         50% of coal and lignite produced electricity to CCS respectively
-load:
-    - extract_bw2_database:
-        project_name: {{base_project}}
-        database_names:
-            - {{base_database}}
 
-technology:
-    #- add_default_CCS_processes:  # This is a default shortcut to add and automatically regionalise all CCS processes
-    #    default: True
-    - add_technology_to_database:
-        technology_file: __ASSET_PATH__/lci-Carma-CCS-base-GLO2.xlsx
-        tasks:
-            - function: fix_ch_only_processes
-              args: []
+actions:
+- action: load
+  tasks:
+  - function: extract_bw2_database
+    kwargs:
+      project_name: {{base_project}}
+      database_name: {{base_database}}
 
-            - function: regionalise_multiple_processes
-              kwargs:
-                locations: ['GB']
-                base_activity_filter: [{'filter': 'equals', 'args': ['database', 'Carma CCS']},
-                                       {'filter': 'equals', 'args': ['unit', 'kilowatt hour']},
-                                       {'filter': 'either', 'args': [
-                                         {'filter': 'contains', 'args': ['name', 'hard coal']},
-                                         {'filter': 'contains', 'args': ['name', 'Hard coal']}
-                                       ]},
-                                       {'filter': 'equals', 'args': ['location', 'GLO']}]
-                progress_message: coal CCS for GB
+- action: add_technology
+  tasks:
+  - function: add_technology_to_database
+    kwargs:
+      technology_file: __ASSET_PATH__/lci-Carma-CCS-base-GLO2.xlsx
 
-            - function: regionalise_multiple_processes
-              kwargs:
-                locations: ['DE']
-                base_activity_filter: [{'filter': 'equals', 'args': ['database', 'Carma CCS']},
-                                       {'filter': 'equals', 'args': ['unit', 'kilowatt hour']},
-                                       {'filter': 'either', 'args': [
-                                       {'filter': 'contains', 'args': ['name', 'lignite']},
-                                       {'filter': 'contains', 'args': ['name', 'Lignite']}
-                                       ]},
-                                       {'filter': 'equals', 'args': ['location', 'GLO']}]
-                progress_message: lignite CCS for DE
+  - function: fix_ch_only_processes
 
-            #- function: add_hard_coal_ccs  # this is a default shortcut to regionalise hard coal CCS to all regions where coal is present
-            #  args: []
-            #- function: add_lignite_ccs    # this is a default shortcut to regionalise lignite CCS to all regions where lignite is present
-            #  args: []
-            #- function: add_natural_gas_ccs    # this is a default shortcut to regionalise natural gas CCS to all regions where natural gas is present
-            #  args: []
-            #- function: add_wood_ccs       # this is a default shortcut to regionalise wood CCS to all regions where wood is present
-            #  args: []
-markets:
-    - alter_market:
+- action: regionalisation
+  tasks:
+  - function: regionalise_multiple_processes
+    kwargs:
+      locations: ['GB']
+      base_activity_filter: [{'filter': 'equals', 'args': ['database', 'Carma CCS']},
+                             {'filter': 'equals', 'args': ['unit', 'kilowatt hour']},
+                             {'filter': 'either', 'args': [
+                               {'filter': 'contains', 'args': ['name', 'hard coal']},
+                               {'filter': 'contains', 'args': ['name', 'Hard coal']}
+                             ]},
+                             {'filter': 'equals', 'args': ['location', 'GLO']}]
+      progress_message: coal CCS for GB
+
+  - function: regionalise_multiple_processes
+    kwargs:
+      locations: ['DE']
+      base_activity_filter: [{'filter': 'equals', 'args': ['database', 'Carma CCS']},
+                             {'filter': 'equals', 'args': ['unit', 'kilowatt hour']},
+                             {'filter': 'either', 'args': [
+                               {'filter': 'contains', 'args': ['name', 'lignite']},
+                               {'filter': 'contains', 'args': ['name', 'Lignite']}
+                             ]},
+                             {'filter': 'equals', 'args': ['location', 'GLO']}]
+      progress_message: lignite CCS for DE
+
+- action: alter_market
+  tasks:
+  - function: set_market
+    kwargs:
         market_filter: [{'filter': 'equals', 'args': ['unit', 'kilowatt hour']},
                         {'filter': 'startswith', 'args': ['name', 'market']},
                         {'filter': 'contains', 'args': ['name', 'high']},
                         {'filter': 'equals', 'args': ['location', 'GB']}]
-        tasks:
-            - function: add_alternative_exchanges
-              args: []
-            - function: transfer_pv
-              args:
-                  - electricity production, hard coal
-                  - Electricity, at power plant/hard coal, post, pipeline 200km, storage 1000m/2025
-              kwargs:
-                  factor: 0.5
-            - function: relink
-              args: []
 
-    - alter_market:
-          market_filter: [{'filter': 'equals', 'args': ['unit', 'kilowatt hour']},
-                          {'filter': 'startswith', 'args': ['name', 'market']},
-                          {'filter': 'contains', 'args': ['name', 'high']},
-                          {'filter': 'equals', 'args': ['location', 'DE']}]
-          tasks:
-              - function: add_alternative_exchanges
-                args: []
-              - function: transfer_pv
-                args:
-                    - electricity production, lignite
-                    - Electricity, at power plant/lignite, post, pipeline 200km, storage 1000m/2025
-                kwargs:
-                    factor: 0.5
-              - function: relink
-                args: []
+  - function: add_alternative_exchanges
+    args: []
+
+  - function: transfer_pv
+    kwargs:
+      from_name: electricity production, hard coal
+      to_name: Electricity, at power plant/hard coal, post, pipeline 200km, storage 1000m/2025
+      factor: 0.5
+
+  - function: relink
+    args: []
+
+- action: alter_market
+  tasks:
+  - function: set_market
+    kwargs:
+        market_filter: [{'filter': 'equals', 'args': ['unit', 'kilowatt hour']},
+                        {'filter': 'startswith', 'args': ['name', 'market']},
+                        {'filter': 'contains', 'args': ['name', 'high']},
+                        {'filter': 'equals', 'args': ['location', 'DE']}]
+
+  - function: add_alternative_exchanges
+    args: []
+
+  - function: transfer_pv
+    kwargs:
+      from_name: electricity production, lignite
+      to_name: Electricity, at power plant/lignite, post, pipeline 200km, storage 1000m/2025
+      factor: 0.5
+
+  - function: relink
+    args: []
