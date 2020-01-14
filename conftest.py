@@ -9,6 +9,8 @@ from futura.loader import FuturaLoader
 IS_TRAVIS = 'TRAVIS' in os.environ
 IS_APPVEYOR = 'APPVEYOR' in os.environ
 
+print('IS_TRAVIS:\t{}\nIS_APPVEYOR:\t{}'.format(IS_TRAVIS, IS_APPVEYOR))
+
 if IS_TRAVIS:
     IS_PR = os.environ.get('TRAVIS_PULL_REQUEST', False) != False
 elif IS_APPVEYOR:
@@ -16,17 +18,7 @@ elif IS_APPVEYOR:
 else:
     IS_PR = False
 
-if not IS_PR:
 
-    if IS_TRAVIS or IS_APPVEYOR:
-        EI_USERNAME = os.environ['EI_USERNAME']
-        EI_PASSWORD = os.environ['EI_PASSWORD']
-
-        config = storage.config
-        config['ecoinvent']['username'] = EI_USERNAME
-        config['ecoinvent']['password'] = EI_PASSWORD
-
-        storage.write_config(config)
 
 
 TEST_ASSET_PATH = os.path.join(os.path.dirname(__file__), 'tests', 'assets')
@@ -58,6 +50,27 @@ ORIGINAL_CONFIG = deepcopy(storage.config)
 
 @pytest.fixture(scope='session')
 def loader():
+
+    if not IS_PR:
+
+        if IS_TRAVIS or IS_APPVEYOR:
+            print('Trying to get ecoinvent login details from environment variables')
+
+            EI_USERNAME = os.environ['EI_USERNAME']
+            EI_PASSWORD = os.environ['EI_PASSWORD']
+
+            print('ecoinvent username: {}'.format(EI_USERNAME))
+            print('ecoinvent password: {}'.format(''.join(['*' for x in EI_PASSWORD])))
+
+            config = storage.config
+            config['ecoinvent']['username'] = EI_USERNAME
+            config['ecoinvent']['password'] = EI_PASSWORD
+
+            print('checking its written to config')
+            print('ecoinvent username: {}'.format(config['ecoinvent']['username']))
+            print('ecoinvent password: {}'.format(''.join(['*' for x in config['ecoinvent']['password']])))
+
+            storage.write_config(config)
 
     loader = FuturaLoader()
 
