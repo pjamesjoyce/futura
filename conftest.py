@@ -21,18 +21,13 @@ if not IS_PR:
     if IS_TRAVIS or IS_APPVEYOR:
         EI_USERNAME = os.environ['EI_USERNAME']
         EI_PASSWORD = os.environ['EI_PASSWORD']
-        WRITE_CONFIG = False
-    else:
+
         config = storage.config
-        if config is not None:
-            if "ecoinvent" in config:
-                EI_USERNAME = config['ecoinvent'].get('username')
-                EI_PASSWORD = config['ecoinvent'].get('password')
-                WRITE_CONFIG = False
-else:
-    EI_USERNAME = None
-    EI_PASSWORD = None
-    WRITE_CONFIG = False
+        config['ecoinvent']['username'] = EI_USERNAME
+        config['ecoinvent']['password'] = EI_PASSWORD
+
+        storage.write_config(config)
+
 
 TEST_ASSET_PATH = os.path.join(os.path.dirname(__file__), 'tests', 'assets')
 
