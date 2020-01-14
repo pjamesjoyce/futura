@@ -4,6 +4,7 @@ import glob
 import yaml
 from .constants import DEFAULT_CONFIG
 
+
 class FuturaStorage():
     def __init__(self):
         self.futura_dir = appdirs.user_data_dir(
