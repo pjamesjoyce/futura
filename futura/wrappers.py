@@ -94,7 +94,7 @@ class FuturaDatabase:
             for x in still_unlinked:
                 for exc in x.get('exchanges', []):
                     if not exc.get("input"):
-                        if exc['location'] == 'GLO':
+                        if exc.get('location') == 'GLO':
                             exc['location'] = 'RoW'
 
             still_unlinked = link_iterable_by_fields(still_unlinked, self.db, fields=["name", "unit", "location"])
