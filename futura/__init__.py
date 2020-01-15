@@ -1,6 +1,9 @@
 import logging
 import wrapt
-from.proxy import WurstProcess
+from .proxy import WurstProcess
+
+from .plugin_loader import load_plugins
+
 # import wurst
 import wurst
 import futura.wurst_monkeypatch as wmp
@@ -49,4 +52,7 @@ def log(MESSAGE, *args, **kwargs):
 def warn(MESSAGE, *args, **kwargs):
     logger1.warning(MESSAGE, *args, **kwargs)
 
+
 warn('Futura is using a monkeypatched version of Wurst')
+
+load_plugins()
