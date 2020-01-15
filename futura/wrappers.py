@@ -8,7 +8,7 @@ from . import warn
 #import brightway2 as bw2
 
 from bw2data import projects, databases
-from bw2io import ExcelImporter, SingleOutputEcospold2Importer, bw2setup
+from bw2io import ExcelImporter, SingleOutputEcospold2Importer, bw2setup, create_core_migrations, migrations
 
 from .utils import *
 from .storage import storage
@@ -75,6 +75,9 @@ class FuturaDatabase:
         print(excelfilepath)
 
         sp = ExcelImporter(excelfilepath)
+
+        if not migrations:
+            create_core_migrations()
 
         # link the biosphere exchanges
         sp.apply_strategies(verbose=False)
@@ -232,6 +235,9 @@ class FuturaDatabase:
 
         if 'biosphere3' not in databases:
             bw2setup()
+
+        if not migrations:
+            create_core_migrations()
 
         importer.apply_strategies()
         datasets, exchanges, unlinked = importer.statistics()
