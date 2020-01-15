@@ -8,7 +8,7 @@ from . import warn
 #import brightway2 as bw2
 
 from bw2data import projects, databases
-from bw2io import ExcelImporter, SingleOutputEcospold2Importer, bw2setup, create_core_migrations, migrations
+from bw2io import ExcelImporter, SingleOutputEcospold2Importer, bw2setup, create_core_migrations, migrations, create_default_biosphere3
 
 from .utils import *
 from .storage import storage
@@ -79,6 +79,10 @@ class FuturaDatabase:
         if not migrations:
             create_core_migrations()
 
+        if 'biosphere3' not in databases:
+            create_default_biosphere3()
+
+
         # link the biosphere exchanges
         sp.apply_strategies(verbose=False)
 
@@ -116,7 +120,7 @@ class FuturaDatabase:
             for x in still_unlinked:
                 for exc in x.get('exchanges', []):
                     if not exc.get("input"):
-                        if exc['location'] == 'RoW':
+                        if exc.get('location') == 'RoW':
                             exc['location'] = 'GLO'
 
             still_unlinked = link_iterable_by_fields(still_unlinked, self.db, fields=["name", "unit", "location"])
