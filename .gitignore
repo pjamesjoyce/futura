@@ -117,6 +117,8 @@ futura_ui/icons/metaprocess
 *.yml
 *.fdb
 
+!futura/assets/*.xlsx
+
 # Notebooks - for now
 
 *.ipynb
