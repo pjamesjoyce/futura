@@ -12,6 +12,8 @@ class FuturaRecipePrettifier:
             'extract_bw2_database': 'Extract Brightway2 Database\n'
                                     'Project: {project_name}\n'
                                     'Database: {database_name}',
+            'extract_BW2Package': 'Extract data from BW2Package file\n'
+                                  'Filepath: {packagefilepath}',
             'extract_excel_data': 'Extract data from Excel file\n'
                                   'File: {excelfilepath}',
             'get_ecoinvent': 'Load base ecoinvent database\n'

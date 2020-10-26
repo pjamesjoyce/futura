@@ -51,7 +51,7 @@ class PandasModel(QtCore.QAbstractTableModel):
             dtype = self.df[col].dtype
             if dtype != object:
                 value = None if value == '' else dtype.type(value)
-        self.df.set_value(row, col, value)
+        self.df.at[row, col] = value
         return True
 
     def rowCount(self, parent=QtCore.QModelIndex()):

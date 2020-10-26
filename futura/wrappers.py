@@ -17,6 +17,7 @@ from .ecoinvent import check_database
 import os
 from copy import deepcopy
 from bw2io.strategies.generic import link_iterable_by_fields
+from bw2io import BW2Package
 
 try:
     import _pickle as pickle
@@ -69,6 +70,30 @@ class FuturaDatabase:
 
         self.db.extend(input_db)
         print(self.db)
+
+    def extract_BW2Package(self, packagefilepath):
+
+        imported_file = BW2Package.load_file(packagefilepath)
+        for i in range(len(imported_file)):
+
+            data = [v for k, v in imported_file[i]['data'].items()]
+
+            for ds in data:
+                if 'parameters' in ds.keys():
+                    parameters, parameters_full = convert_parameters_to_wurst_style(ds['parameters'])
+                    ds['parameters'] = parameters
+                    ds['parameters full'] = parameters_full
+
+            name = imported_file[i]['name']
+
+            add_input_info_for_indigenous_exchanges(data, [name])
+
+
+
+            #add_input_info_for_indigenous_exchanges(data, [name])
+
+            self.db.extend(data)
+            self.database_names.append(name)
 
     def extract_excel_data(self, excelfilepath):
 

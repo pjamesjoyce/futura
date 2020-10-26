@@ -10,6 +10,7 @@ from PySide2.QtWidgets import QProgressDialog, QFileDialog, QApplication
 from PySide2.QtCore import Qt
 from .threads import FunctionThread, GeneratorThread
 
+import os
 
 class FuturaGuiLoader(FuturaLoader):
 
@@ -64,8 +65,7 @@ class FuturaGuiLoader(FuturaLoader):
 
         filename, _ = QFileDialog.getSaveFileName(None,
                                                   'Save...',
-                                                  # os.path.join(os.path.expanduser('~'), 'Documents'),
-                                                  r'C:\Users\pjjoyce\Dropbox\00_My_Software',
+                                                  os.path.join(os.path.expanduser('~'), 'Documents'),
                                                   "Futura Loader Files (*.fl)")
         if filename:
             self.save(filename)
@@ -76,8 +76,7 @@ class FuturaGuiLoader(FuturaLoader):
 
         filename, _ = QFileDialog.getOpenFileName(None,
                                                   'Open Futura file...',
-                                                  # os.path.join(os.path.expanduser('~'), 'Documents'),
-                                                  r'C:\Users\pjjoyce\Dropbox\00_My_Software',
+                                                  os.path.join(os.path.expanduser('~'), 'Documents'),
                                                   "Futura Loader Files (*.fl)")
         if filename:
             self.load(filename)

@@ -30,7 +30,7 @@ def copy_to_new_location(ds, location):
 
 
 def relink_technosphere_exchanges(ds, data, exclusive=True,
-                                  drop_invalid=False, biggest_first=False, contained=True, exclude=None):
+                                  drop_invalid=False, keep_invalid=False, biggest_first=False, contained=True, exclude=None):
     """Find new technosphere providers based on the location of the dataset.
 
     Designed to be used when the dataset's location changes, or when new datasets are added.
@@ -51,9 +51,10 @@ def relink_technosphere_exchanges(ds, data, exclusive=True,
         * ``data``: The list of datasets to search for technosphere product providers.
         * ``exclusive``: Bool, default is ``True``. Don't allow overlapping locations in input providers.
         * ``drop_invalid``: Bool, default is ``False``. Delete exchanges for which no valid provider is available.
+        * ``keep_invalid``: Bool, default is ``False``. Keep potentially invalid exchanges from original datasets where not valid alternative provider available.
         * ``biggest_first``: Bool, default is ``False``. Determines search order when selecting provider locations. Only relevant is ``exclusive`` is ``True``.
         * ``contained``: Bool, default is ``True``. If ture, only use providers whose location is completely within the ``ds`` location; otherwise use all intersecting locations.
-        * ``exclude``: TODO: write this
+        * ``exclude``: List, optional list of locations to exclude possible exchanges from.
 
     Modifies the dataset in place; returns the modified dataset."""
 
@@ -61,6 +62,7 @@ def relink_technosphere_exchanges(ds, data, exclusive=True,
 
     MESSAGE = "Relinked technosphere exchange of {}/{}/{} from {}/{} to {}/{}."
     DROPPED = "Dropped technosphere exchange of {}/{}/{}; no valid providers."
+    RETAINED = "Retained potentially invalid technosphere exchange of {}/{}/{}; no valid providers."
     new_exchanges = []
     technosphere = lambda x: x['type'] == 'technosphere'
 
@@ -99,6 +101,18 @@ def relink_technosphere_exchanges(ds, data, exclusive=True,
                     )
                 }, ds)
                 continue
+
+            elif keep_invalid:
+                print('keeping invalid links')
+                log({
+                    'function': 'relink_technosphere_exchanges',
+                    'message': RETAINED.format(
+                        exc['name'], exc['product'], exc['unit']
+                    )
+                }, ds)
+                print(exc)
+                kept = [exc]
+
             else:
                 print("technosphere exchange of {}/{}/{}; no valid providers.".format(exc['name'], exc['product'],
                                                                                       exc['unit']))
@@ -187,7 +201,7 @@ def get_possibles(exchange, data):
         print(exchange)
         assert 0
     for ds in data:
-        if (ds['name'], ds['reference product'], ds['unit']) == key:
+        if (ds['name'], ds.get('reference product'), ds['unit']) == key:
             yield ds
 
 

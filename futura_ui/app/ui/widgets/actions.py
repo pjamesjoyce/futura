@@ -20,6 +20,8 @@ class ActionWidget(QtWidgets.QWidget):
             self.technologyFileButton,
             self.marketsButton,
             self.exportBrightwayButton,
+            self.brightwayDbButton,
+            self.bw2PackageButton,
             self.testButton,
             self.saveLoaderButton
         ]
@@ -52,6 +54,9 @@ class ActionWidget(QtWidgets.QWidget):
 
         self.exportBrightwayButton.pressed.connect(signals.export_to_brightway.emit)
         self.testButton.pressed.connect(self.test)
+
+        self.brightwayDbButton.pressed.connect(signals.import_from_brightway.emit)
+        self.bw2PackageButton.pressed.connect(signals.import_bw2_package.emit)
 
     def connect_signals(self):
         signals.show_recipe_actions.connect(self.activate_recipe_actions)

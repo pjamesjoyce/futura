@@ -90,7 +90,8 @@ def regionalise_multiple_processes(database, locations, base_activity_filter, pr
                                         drop_invalid=False,
                                         biggest_first=False,
                                         contained=False,
-                                        exclude=['UCTE'])
+                                        exclude=['UCTE'],
+                                        keep_invalid=True)
     return database
 
 

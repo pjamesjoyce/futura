@@ -7,7 +7,7 @@ from futura.wrappers import FuturaDatabase
 import warnings
 
 def create_regional_activities(base_activity, new_regions, db, production_volumes=None,
-                               remove_production_from_original=True, relink_now=True):
+                               remove_production_from_original=True, relink_now=True, keep_invalid=True):
     if production_volumes:
         assert len(production_volumes) == len(new_regions)
         total_production = 0
@@ -39,7 +39,8 @@ def create_regional_activities(base_activity, new_regions, db, production_volume
                                                      drop_invalid=False,
                                                      biggest_first=False,
                                                      contained=False,
-                                                     exclude=['UCTE'])
+                                                     exclude=['UCTE'],
+                                                     keep_invalid=keep_invalid)
         else:
             code_list.append((new_ds['database'], new_ds['code']))
 

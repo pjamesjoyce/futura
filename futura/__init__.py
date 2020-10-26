@@ -7,6 +7,7 @@ from .plugin_loader import load_plugins
 # import wurst
 import wurst
 import futura.wurst_monkeypatch as wmp
+import os
 #do monkeypatching here
 
 wurst.relink_technosphere_exchanges = wmp.relink_technosphere_exchanges
@@ -25,7 +26,9 @@ wurst.searching.get_one = return_WurstProcess(wurst.searching.get_one)
 #create w alias for wurst
 w = wurst
 
-
+if not os.path.exists(r'C:\temp'):
+    os.mkdir(r'C:\temp')
+    
 # set up logging to file - see previous section for more details
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -56,3 +59,5 @@ def warn(MESSAGE, *args, **kwargs):
 warn('Futura is using a monkeypatched version of Wurst')
 
 load_plugins()
+
+from .loader import FuturaLoader

@@ -8,7 +8,7 @@ from .signals import signals
 from .wrappers import FuturaGuiLoader
 
 from .utils import findMainWindow
-from .ui.dialogs import BaseDatabaseDialog, NewRecipeDialog, EcoinventLoginDialog, BrightwayDialog
+from .ui.dialogs import BaseDatabaseDialog, NewRecipeDialog, EcoinventLoginDialog, BrightwayDialog, BrightwayOpenDialog
 from .ui.widgets.filter import parse_filter_widget, FilterListerDialog
 from .ui.wizards import RegionalisationWizard, MarketsWizard
 
@@ -57,6 +57,8 @@ class Controller(object):
         signals.markets_wizard.connect(self.markets_wizard)
         signals.add_base_database.connect(self.add_base_database_dialog)
         signals.export_to_brightway.connect(self.export_to_brightway)
+        signals.import_from_brightway.connect(self.import_from_brightway)
+        signals.import_bw2_package.connect(self.importBw2_package)
 
     # Specific functions to do things go here, within the controller class
 
@@ -131,8 +133,8 @@ class Controller(object):
     def load_recipe(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(None,
                                                             'Choose a recipe file...',
-                                                            # os.path.join(os.path.expanduser('~'), 'Documents'),
-                                                            r'C:\Users\pjjoyce\Dropbox\00_My_Software',
+                                                            os.path.join(os.path.expanduser('~'), 'Documents'),
+                                                            # r'C:\Users\pjjoyce\Dropbox\00_My_Software',
                                                             "Recipe Files (*.yml *.yaml)")
         print(filename)
         if filename:
@@ -244,8 +246,8 @@ class Controller(object):
 
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(None,
                                                             'Choose a recipe file...',
-                                                            # os.path.join(os.path.expanduser('~'), 'Documents'),
-                                                            r'C:\Users\pjjoyce\Dropbox\00_My_Software',
+                                                            os.path.join(os.path.expanduser('~'), 'Documents'),
+                                                            # r'C:\Users\pjjoyce\Dropbox\00_My_Software',
                                                             "Recipe Files (*.yml *.yaml)")
         if filename:
 
@@ -386,39 +388,39 @@ class Controller(object):
 
     def add_base_database(self, version, system_model, **kwargs):
 
-            recipe_entry = {
-                'action': 'load',
-                'tasks': [
-                    {
-                        'function': 'get_ecoinvent',
-                        'kwargs': {
-                            'version': version,
-                            'system_model': system_model
-                        }
-                    },
-                ]
-            }
+        recipe_entry = {
+            'action': 'load',
+            'tasks': [
+                {
+                    'function': 'get_ecoinvent',
+                    'kwargs': {
+                        'version': version,
+                        'system_model': system_model
+                    }
+                },
+            ]
+        }
 
-            signals.start_status_progress.emit(0)
-            signals.change_status_message.emit('Loading ecoinvent {} {}...'.format(version, system_model))
+        signals.start_status_progress.emit(0)
+        signals.change_status_message.emit('Loading ecoinvent {} {}...'.format(version, system_model))
 
-            loader = findMainWindow().loader
-            executor = FuturaRecipeExecutor(findMainWindow().loader)
+        loader = findMainWindow().loader
+        executor = FuturaRecipeExecutor(findMainWindow().loader)
 
-            def run():
-                QtWidgets.QApplication.processEvents()
-                yield 'starting'
-                executor.execute_recipe_action(recipe_entry, **kwargs)
-                yield 'finishing'
-                loader.recipe['actions'].append(recipe_entry)
-                signals.hide_status_progress.emit()
-                signals.update_recipe.emit()
-                signals.reset_status_message.emit()
-                signals.show_recipe_actions.emit()
-
-            self.thread = GeneratorThread(run, 2)
+        def run():
             QtWidgets.QApplication.processEvents()
-            self.thread.start()
+            yield 'starting'
+            executor.execute_recipe_action(recipe_entry, **kwargs)
+            yield 'finishing'
+            loader.recipe['actions'].append(recipe_entry)
+            signals.hide_status_progress.emit()
+            signals.update_recipe.emit()
+            signals.reset_status_message.emit()
+            signals.show_recipe_actions.emit()
+
+        self.thread = GeneratorThread(run, 2)
+        QtWidgets.QApplication.processEvents()
+        self.thread.start()
 
     def check_ecoinvent_details(self):
 
@@ -518,4 +520,98 @@ class Controller(object):
             self.thread = GeneratorThread(run)
             self.thread.start()
 
+    def import_from_brightway(self):
+        loader = findMainWindow().loader
 
+        recipe = loader.recipe
+
+        brightway_dialog = BrightwayOpenDialog()
+
+        project_list = [p.name for p in sorted(projects)]
+
+        brightway_dialog.projectComboBox.addItems(project_list)
+
+        if brightway_dialog.exec_():
+            project = brightway_dialog.projectComboBox.currentText()
+
+            database = brightway_dialog.databaseComboBox.currentText()
+
+            self.add_extra_database(project, database)
+
+    def add_extra_database(self, project, database, **kwargs):
+
+        recipe_entry = {
+            'action': 'load',
+            'tasks': [
+                {
+                    'function': 'extract_bw2_database',
+                    'kwargs': {
+                        'project_name': project,
+                        'database_name': database
+                    }
+                },
+            ]
+        }
+
+        signals.start_status_progress.emit(0)
+        signals.change_status_message.emit('Loading {} {}...'.format(project, database))
+
+        loader = findMainWindow().loader
+        executor = FuturaRecipeExecutor(findMainWindow().loader)
+
+        def run():
+            QtWidgets.QApplication.processEvents()
+            yield 'starting'
+            executor.execute_recipe_action(recipe_entry, **kwargs)
+            yield 'finishing'
+            loader.recipe['actions'].append(recipe_entry)
+            signals.hide_status_progress.emit()
+            signals.update_recipe.emit()
+            signals.reset_status_message.emit()
+            signals.show_recipe_actions.emit()
+
+        self.thread = GeneratorThread(run, 2)
+        QtWidgets.QApplication.processEvents()
+        self.thread.start()
+
+    def importBw2_package(self):
+
+        filename, _ = QtWidgets.QFileDialog.getOpenFileName(None,
+                                                            'Choose a bw2package file...',
+                                                            os.path.join(os.path.expanduser('~'), 'Documents'),
+                                                            # r'C:\Users\pjjoyce\Dropbox\00_My_Software',
+                                                            "bw2package Files (*.bw2package)")
+        print(filename)
+        if filename:
+            recipe_entry = {
+                'action': 'load',
+                'tasks': [
+                    {
+                        'function': 'extract_BW2Package',
+                        'kwargs': {
+                            'packagefilepath': filename,
+                        }
+                    },
+                ]
+            }
+
+            signals.start_status_progress.emit(0)
+            signals.change_status_message.emit('Loading data from {}...'.format(filename))
+
+            loader = findMainWindow().loader
+            executor = FuturaRecipeExecutor(findMainWindow().loader)
+
+            def run():
+                QtWidgets.QApplication.processEvents()
+                yield 'starting'
+                executor.execute_recipe_action(recipe_entry)
+                yield 'finishing'
+                loader.recipe['actions'].append(recipe_entry)
+                signals.hide_status_progress.emit()
+                signals.update_recipe.emit()
+                signals.reset_status_message.emit()
+                signals.show_recipe_actions.emit()
+
+            self.thread = GeneratorThread(run, 2)
+            QtWidgets.QApplication.processEvents()
+            self.thread.start()

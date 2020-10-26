@@ -28,7 +28,8 @@ def add_exchange_to_activity(base_activity, activity_to_link_to):
     if exchange_template not in base_activity['exchanges']:
         base_activity['exchanges'].append(exchange_template)
     else:
-        warn('Exchange of {} already exists in this process, not adding it'.format(activity_to_link_to['name']))
+        #warn('Exchange of {} already exists in this process, not adding it'.format(activity_to_link_to['name']))
+        log('Exchange of {} already exists in this process, not adding it'.format(activity_to_link_to['name']))
 
 
 def get_processes_from_exchanges(process, database, reference_product):

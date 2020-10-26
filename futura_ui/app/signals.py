@@ -62,6 +62,9 @@ class Signals(QObject):
 
     add_base_database = Signal()
 
+    import_from_brightway = Signal()
+    import_bw2_package = Signal()
+
     # Export to Brightway
 
     export_to_brightway = Signal()
@@ -69,6 +72,8 @@ class Signals(QObject):
     #test
 
     temp_message_signal = Signal()
+
+
 
 
 signals = Signals()

@@ -1,6 +1,9 @@
+import pkg_resources
+
 from .technology import *
 from .regionalisation import *
 from .markets import FuturaMarket
+from .targeted import FuturaProcess
 from .ecoinvent import check_database
 from .constants import ASSET_PATH, DEFAULT_SETUP_PROJECT
 
@@ -25,7 +28,7 @@ class FuturaRecipeExecutor:
             'add_lignite_ccs',
             'add_natural_gas_ccs',
             'add_wood_ccs',
-            'regionalise_multiple_processes'
+            'regionalise_multiple_processes',
 
         ]
 
@@ -35,6 +38,8 @@ class FuturaRecipeExecutor:
 
         self.market = None
 
+        self.process = None
+
     @property
     def actions(self):
         base_actions = {
@@ -42,6 +47,7 @@ class FuturaRecipeExecutor:
                 {
                     'extract_bw2_database': None,  # self.loader.database.extract_bw2_database,
                     'extract_excel_data': None,  # self.loader.database.extract_excel_data
+                    'extract_BW2Package': None,  # self.loader.database.extract_BW2Package
                     'get_ecoinvent': None
                 },
             'add_technology':
@@ -66,7 +72,15 @@ class FuturaRecipeExecutor:
                     'set_pv': None,
                     'transfer_pv': None,
                     'relink': None
+                },
+
+            'target_processes':
+                {
+                    'set_process': self.set_process,
+                    'change_production_amount': None,
+                    'change_exchange_amounts': None,
                 }
+            
         }
 
         if self.market:
@@ -75,10 +89,19 @@ class FuturaRecipeExecutor:
             base_actions['alter_market']['transfer_pv'] = self.market.transfer_pv
             base_actions['alter_market']['relink'] = self.market.relink
 
+        if self.process:
+            base_actions['target_processes']['change_production_amount'] = self.process.change_production_amount
+            base_actions['target_processes']['change_exchange_amounts'] = self.process.change_exchange_amounts
+
         if self.loader:
             base_actions['load']['extract_bw2_database'] = self.database.extract_bw2_database
             base_actions['load']['extract_excel_data'] = self.database.extract_excel_data
             base_actions['load']['get_ecoinvent'] = self.database.get_ecoinvent
+            base_actions['load']['extract_BW2Package'] = self.database.extract_BW2Package
+
+        for entry_point in pkg_resources.iter_entry_points('futura_plugins'):
+            x = entry_point.load()
+            base_actions.update(x.actions)
 
         return base_actions
 
@@ -117,6 +140,15 @@ class FuturaRecipeExecutor:
 
         assert isinstance(market, FuturaMarket)
         self.market = market
+
+    def set_process(self, process_filter):
+        this_process_filter = create_filter_from_description(process_filter)
+        this_process = w.get_one(self.database.db, *this_process_filter)
+        process = FuturaProcess(this_process, self.database)
+
+        assert isinstance(process, FuturaProcess)
+
+        self.process = process
 
     def execute_recipe_action(self, recipe_action, **kwargs):
 
