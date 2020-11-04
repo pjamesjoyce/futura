@@ -43,8 +43,8 @@ class FuturaProcess():
         """
 
         for exc in self.exchanges:
-            if (exc['name'], exc['location']) in change_dict.keys():
+            if (exc['name'], exc.get('location')) in change_dict.keys():
                 if not exc.get('futura_metadata'):
                     exc['futura_metadata'] = {}
                 exc['futura_metadata']['original amount'] = exc['amount']
-                exc['amount'] = change_dict[(exc['name'], exc['location'])]
+                exc['amount'] = change_dict[(exc['name'], exc.get('location'))]

@@ -3,6 +3,7 @@ from .wrappers import FuturaDatabase
 #import wurst as w
 from . import w
 from wurst.searching import exclude
+from wurst import log
 from itertools import groupby
 from collections import OrderedDict
 import pandas as pd
@@ -29,8 +30,8 @@ def add_exchange_to_activity(base_activity, activity_to_link_to):
         base_activity['exchanges'].append(exchange_template)
     else:
         #warn('Exchange of {} already exists in this process, not adding it'.format(activity_to_link_to['name']))
-        log('Exchange of {} already exists in this process, not adding it'.format(activity_to_link_to['name']))
-
+        #log('Exchange of {} already exists in this process, not adding it'.format(activity_to_link_to['name']), base_activity)
+        print('Exchange of {} already exists in this process, not adding it'.format(activity_to_link_to['name']))
 
 def get_processes_from_exchanges(process, database, reference_product):
 
