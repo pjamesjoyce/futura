@@ -6,7 +6,7 @@ from setuptools import setup
 import os, sys
 
 PACKAGE_NAME = 'futura'
-VERSION = '0.0.3'
+VERSION = '0.0.4'
 
 packages = []
 root_dir = os.path.dirname(__file__)
