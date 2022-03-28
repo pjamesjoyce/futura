@@ -193,7 +193,7 @@ def get_possibles(exchange, data):
     if market_name != exchange['name']:
         key = (market_name, exchange['product'], exchange['unit'])
         for ds in data:
-            if (ds['name'], ds['reference product'], ds['unit']) == key:
+            if (ds['name'], ds.get('reference product'), ds['unit']) == key:
                 yield ds
     try:
         key = (exchange['name'], exchange['product'], exchange['unit'])
