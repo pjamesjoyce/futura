@@ -46,7 +46,7 @@ interface by activating your futura environment and typing `futura_ui` like this
 
 ```bash
 $ activate futura
-(futura) $ futura_ui
+(futura) $ futura
 ```
 
 This will launch the user interface (written with Pyside2) which looks a bit like this:
